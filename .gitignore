@@ -1,0 +1,9 @@
+/.dart_tool
+/.flutter-plugins
+/.flutter-plugins-dependencies
+/.packages
+/AppDir
+/appimage-builder-cache
+/build
+/default.profraw
+/scripts.yaml

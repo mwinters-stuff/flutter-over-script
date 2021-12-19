@@ -1,0 +1,10 @@
+[Desktop Entry]
+Comment=
+Terminal=false
+Name=Overscript
+Exec=/home/mathew/src/scripts2/flutter-overscript-bundle/overscript --script-path=/home/mathew/src/scripts2/
+Type=Application
+Icon=/home/mathew/src/scripts2/flutter-overscript/Overscript.svg
+Name[en_NZ]=Overscript
+Hidden=false
+NoDisplay=false
