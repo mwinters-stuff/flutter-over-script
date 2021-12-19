@@ -7,3 +7,13 @@
 /build
 /default.profraw
 /scripts.yaml
+.DS_Store
+.atom/
+.idea
+.packages
+.pub/
+build/
+ios/.generated/
+packages
+pubspec.lock
+.flutter-plugins

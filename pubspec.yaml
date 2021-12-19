@@ -1,5 +1,5 @@
 name: overscript
-description: Overscript for running and building ctct stuff.
+description: Overscript for running scripts on separate clones of the same repository.
 version: 1.0.0
 publish_to: none
 # homepage: https://www.example.com
@@ -36,7 +36,7 @@ dependencies:
       url: git://github.com/google/flutter-desktop-embedding.git
       path: plugins/window_size
       ref: HEAD
-  json_annotation: ^4.3.0      
+  json_annotation: ^4.4.0
   
 dev_dependencies:
   flutter_lints: ^1.0.4
