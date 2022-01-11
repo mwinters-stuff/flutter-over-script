@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:overscript/bloc/bloc.dart';
 import 'package:overscript/repositories/repositories.dart';
 import 'package:overscript/widgets/settings_screen.dart';
@@ -45,12 +47,14 @@ Future<void> main(List<String> arguments) async {
   runApp(MultiRepositoryProvider(providers: [
     RepositoryProvider<ConfigurationRepository>(
         create: (context) => configurationRepository),
-    RepositoryProvider<ScriptsRepository>(
-        create: (context) => ScriptsRepository(context)),
+    RepositoryProvider<OldScriptsRepository>(
+        create: (context) => OldScriptsRepository(context)),
     RepositoryProvider<BranchRepository>(
         create: (context) => BranchRepository()),
     RepositoryProvider<PtyRepository>(create: (context) => PtyRepository()),
     RepositoryProvider<KittyRepository>(create: (context) => KittyRepository()),
+    RepositoryProvider<ScriptsStoreRepository>(
+        create: (context) => ScriptsStoreRepository()),
   ], child: const MyApp()));
 }
 
@@ -79,10 +83,10 @@ class MyApp extends StatelessWidget {
             create: (context) => ConfigurationBloc(
                 configurationRepository:
                     RepositoryProvider.of<ConfigurationRepository>(context))),
-        BlocProvider<ScriptsBloc>(
-            create: (context) => ScriptsBloc(
+        BlocProvider<OldScriptsBloc>(
+            create: (context) => OldScriptsBloc(
                 scriptsRepository:
-                    RepositoryProvider.of<ScriptsRepository>(context),
+                    RepositoryProvider.of<OldScriptsRepository>(context),
                 configurationRepository:
                     RepositoryProvider.of<ConfigurationRepository>(context))),
         BlocProvider<BranchesBloc>(
@@ -94,7 +98,11 @@ class MyApp extends StatelessWidget {
                 repository: RepositoryProvider.of<PtyRepository>(context))),
         BlocProvider<KittyBloc>(
             create: (context) => KittyBloc(
-                repository: RepositoryProvider.of<KittyRepository>(context)))
+                repository: RepositoryProvider.of<KittyRepository>(context))),
+        BlocProvider<ScriptsStoreBloc>(
+            create: (context) => ScriptsStoreBloc(
+                repository:
+                    RepositoryProvider.of<ScriptsStoreRepository>(context)))
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -107,12 +115,31 @@ class MyApp extends StatelessWidget {
               case SettingsScreen.routeName:
                 return MaterialPageRoute(
                     builder: (BuildContext context) => const SettingsScreen());
+              case ScriptsScreen.routeName:
+                return MaterialPageRoute(
+                    builder: (BuildContext context) => const ScriptsScreen());
+              case ScriptEditScreen.routeNameAdd:
+                return MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        const ScriptEditScreen());
+              case ScriptEditScreen.routeNameEdit:
+                return MaterialPageRoute(
+                    builder: (BuildContext context) => ScriptEditScreen(
+                        editUuid: settings.arguments as String));
               default:
                 return MaterialPageRoute(
                     builder: (BuildContext context) =>
                         const AppScaffold(title: 'Overscript'));
             }
-          }),
+          },
+          localizationsDelegates: const [
+            FormBuilderLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en', ''),
+          ]),
     );
   }
 }

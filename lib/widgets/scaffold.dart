@@ -100,8 +100,8 @@ class _AppScaffoldState extends State<AppScaffold>
                   }),
               IconButton(
                   tooltip: 'Reload Scripts',
-                  onPressed: () => BlocProvider.of<ScriptsBloc>(context)
-                      .add(ScriptsReloadedEvent(context: context)),
+                  onPressed: () => BlocProvider.of<OldScriptsBloc>(context)
+                      .add(OldScriptsReloadedEvent(context: context)),
                   icon: const Icon(Icons.refresh)),
               IconButton(
                   tooltip: 'Edit Scripts',
@@ -115,6 +115,11 @@ class _AppScaffoldState extends State<AppScaffold>
                             ])
                       },
                   icon: const Icon(Icons.edit)),
+              IconButton(
+                  tooltip: 'Scripts',
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(ScriptsScreen.routeName),
+                  icon: const Icon(Icons.subscript_sharp)),
               IconButton(
                   tooltip: 'Settings',
                   onPressed: () =>

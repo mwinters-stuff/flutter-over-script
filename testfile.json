@@ -1,0 +1,34 @@
+{
+  "scripts": [
+    {
+      "uuid": "a-uuid",
+      "name": "Test Script",
+      "command": "test.sh",
+      "args": [
+        "arg1",
+        "arg2"
+      ],
+      "workingDirectory": "/path/to/work",
+      "runInDocker": false,
+      "envVars": {
+        "thing": "bob",
+        "which": "that"
+      }
+    },
+    {
+      "uuid": "a-uuid-3",
+      "name": "Test Script 2",
+      "command": "test2.sh",
+      "args": [
+        "arg1",
+        "arg2"
+      ],
+      "workingDirectory": "/path/to/morework",
+      "runInDocker": true,
+      "envVars": {
+        "thing": "bob",
+        "which": "that"
+      }
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import 'package:dog/dog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:overscript/bloc/scripts_bloc.dart';
+import 'package:overscript/bloc/old_scripts_bloc.dart';
 import 'package:overscript/repositories/repositories.dart';
 
 class ScriptMenu extends StatefulWidget {
@@ -15,7 +15,7 @@ class _ScriptMenuState extends State<ScriptMenu> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<ScriptsBloc>(context).add(ScriptsRequestEvent());
+    BlocProvider.of<OldScriptsBloc>(context).add(OldScriptsRequestEvent());
   }
 
   @override
@@ -23,10 +23,11 @@ class _ScriptMenuState extends State<ScriptMenu> {
     final configurationRepository =
         RepositoryProvider.of<ConfigurationRepository>(context);
 
-    return BlocConsumer<ScriptsBloc, ScriptsState>(listener: (context, state) {
-      if (state is ScriptsInitial) {}
+    return BlocConsumer<OldScriptsBloc, OldScriptsState>(
+        listener: (context, state) {
+      if (state is OldScriptsInitial) {}
     }, builder: (context, state) {
-      if (state is ScriptsLoadedState) {
+      if (state is OldScriptsLoadedState) {
         return Expanded(
             child: ListView.separated(
           padding: const EdgeInsets.all(2),
@@ -52,7 +53,7 @@ class _ScriptMenuState extends State<ScriptMenu> {
 
   void runScript(BuildContext context, String scriptName, String branchName) {
     dog.i('Run $scriptName on $branchName');
-    final script = RepositoryProvider.of<ScriptsRepository>(context)
+    final script = RepositoryProvider.of<OldScriptsRepository>(context)
         .getScriptFromName(name: scriptName);
     if (script == null) {
       dog.e('Script not found');

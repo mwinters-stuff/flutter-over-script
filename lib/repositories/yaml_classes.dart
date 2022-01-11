@@ -222,7 +222,7 @@ class YamlScript {
       if (tab.buildallmaster() == option.no) {
         tab.execute(context, branch, tabs.length == 1);
       } else {
-        final scripts = RepositoryProvider.of<ScriptsRepository>(context)
+        final scripts = RepositoryProvider.of<OldScriptsRepository>(context)
             .getBuildAllScripts();
         for (var element in scripts) {
           element.execute(context, branch);
@@ -241,11 +241,7 @@ class YamlScripts {
   @JsonKey(required: true)
   final List<YamlScript> scripts;
 
-  YamlScripts({required this.scripts}) {
-    if (scripts.isEmpty) {
-      throw ArgumentError.value(scripts, 'scripts', 'Cannot be empty.');
-    }
-  }
+  YamlScripts({required this.scripts});
 
   factory YamlScripts.fromJson(Map json) => _$YamlScriptsFromJson(json);
 

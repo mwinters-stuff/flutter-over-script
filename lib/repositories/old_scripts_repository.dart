@@ -6,26 +6,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overscript/repositories/repositories.dart';
 import 'package:path/path.dart' as p;
 
-class ScriptsRepository {
+class OldScriptsRepository {
   late YamlScripts _yamlScripts;
   List<YamlScript> get scripts => _yamlScripts.scripts;
 
-  ScriptsRepository(BuildContext context) {
+  OldScriptsRepository(BuildContext context) {
     loadScripts(context);
   }
 
   Future<void> loadScripts(BuildContext context) async {
     final configurationRepository =
         RepositoryProvider.of<ConfigurationRepository>(context);
+    final file = File(
+        p.join(configurationRepository.scriptPath.getValue(), 'scripts.yaml'));
 
-    final yamlContent = File(p.join(
-            configurationRepository.scriptPath.getValue(), 'scripts.yaml'))
-        .readAsStringSync();
-    _yamlScripts = checkedYamlDecode(
-      yamlContent,
-      (m) => YamlScripts.fromJson(m!),
-      sourceUrl: null,
-    );
+    if (file.existsSync()) {
+      final yamlContent = file.readAsStringSync();
+      _yamlScripts = checkedYamlDecode(
+        yamlContent,
+        (m) => YamlScripts.fromJson(m!),
+        sourceUrl: null,
+      );
+    } else {
+      _yamlScripts = YamlScripts(scripts: []);
+    }
     return Future.value(null);
   }
 

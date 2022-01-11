@@ -15,7 +15,7 @@ dependencies:
   # dcli: ^1.5.4
   path: ^1.8.0
   args: ^2.1.1
-  flutter_bloc: ^8.0.0
+  flutter_bloc: ^8.0.1
   equatable: ^2.0.3
   streaming_shared_preferences: ^2.0.0
   settings_ui: ^1.0.0
@@ -37,14 +37,22 @@ dependencies:
       path: plugins/window_size
       ref: HEAD
   json_annotation: ^4.4.0
-  
+  form_field_validator: ^1.1.0
+  flutter_form_builder: ^7.0.0
+  form_builder_validators: ^7.2.0
+  flutter_localizations:
+    sdk: flutter
+
 dev_dependencies:
   flutter_lints: ^1.0.4
   test: ^1.16.0
   build_runner: ^2.0.0
   build_verify: ^3.0.0
   json_serializable: ^6.0.1
-  
+  bloc_test: ^9.0.2
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.0.17
 
   # flutter pub run build_runner build
 
