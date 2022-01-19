@@ -41,7 +41,10 @@ StoredScript _$StoredScriptFromJson(Map json) => $checkedCreate(
               $checkedConvert('workingDirectory', (v) => v as String),
           runInDocker: $checkedConvert('runInDocker', (v) => v as bool),
           envVars: $checkedConvert(
-              'envVars', (v) => Map<String, String>.from(v as Map)),
+              'envVars',
+              (v) => (v as List<dynamic>)
+                  .map((e) => StringPair.fromJson(e as Map))
+                  .toList()),
         );
         return val;
       },
@@ -56,28 +59,4 @@ Map<String, dynamic> _$StoredScriptToJson(StoredScript instance) =>
       'workingDirectory': instance.workingDirectory,
       'runInDocker': instance.runInDocker,
       'envVars': instance.envVars,
-    };
-
-StoredScripts _$StoredScriptsFromJson(Map json) => $checkedCreate(
-      'StoredScripts',
-      json,
-      ($checkedConvert) {
-        $checkKeys(
-          json,
-          allowedKeys: const ['scripts'],
-          requiredKeys: const ['scripts'],
-        );
-        final val = StoredScripts();
-        $checkedConvert(
-            'scripts',
-            (v) => val.scripts = (v as List<dynamic>)
-                .map((e) => StoredScript.fromJson(e as Map))
-                .toList());
-        return val;
-      },
-    );
-
-Map<String, dynamic> _$StoredScriptsToJson(StoredScripts instance) =>
-    <String, dynamic>{
-      'scripts': instance.scripts,
     };

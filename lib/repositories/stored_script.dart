@@ -1,4 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:overscript/repositories/stored_string_pair.dart';
+import 'package:uuid/uuid.dart';
 
 part 'stored_script.g.dart';
 
@@ -7,62 +10,39 @@ part 'stored_script.g.dart';
   checked: true,
   disallowUnrecognizedKeys: true,
 )
-class StoredScript {
+class StoredScript extends Equatable {
   @JsonKey(required: true)
-  String uuid;
+  final String uuid;
   @JsonKey(required: true)
-  String name;
+  final String name;
   @JsonKey(required: true)
-  String command;
+  final String command;
   @JsonKey(required: true)
-  List<String> args;
+  final List<String> args;
   @JsonKey(required: true)
-  String workingDirectory;
+  final String workingDirectory;
   @JsonKey(required: true)
-  bool runInDocker;
+  final bool runInDocker;
   @JsonKey(required: true)
-  Map<String, String> envVars;
+  final List<StringPair> envVars;
 
   StoredScript.empty()
-      : uuid = '',
+      : uuid = const Uuid().v1(),
         name = '',
         command = '',
         args = [],
         workingDirectory = '',
         runInDocker = false,
-        envVars = {};
+        envVars = [];
 
-  StoredScript(
-      {required this.uuid,
-      required this.name,
-      required this.command,
-      required this.args,
-      required this.workingDirectory,
-      required this.runInDocker,
-      required this.envVars});
+  const StoredScript({required this.uuid, required this.name, required this.command, required this.args, required this.workingDirectory, required this.runInDocker, required this.envVars});
 
   factory StoredScript.fromJson(Map json) => _$StoredScriptFromJson(json);
 
   Map<String, dynamic> toJson() => _$StoredScriptToJson(this);
   @override
   String toString() => '${toJson()}';
-}
-
-@JsonSerializable(
-  anyMap: true,
-  checked: true,
-  disallowUnrecognizedKeys: true,
-)
-class StoredScripts {
-  @JsonKey(required: true)
-  List<StoredScript> scripts = [];
-
-  factory StoredScripts.fromJson(Map json) => _$StoredScriptsFromJson(json);
-
-  StoredScripts();
-
-  Map<String, dynamic> toJson() => _$StoredScriptsToJson(this);
 
   @override
-  String toString() => '${toJson()}';
+  List<Object?> get props => [uuid, name, command, args, workingDirectory, runInDocker, envVars];
 }

@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:overscript/bloc/bloc.dart';
 import 'package:overscript/repositories/repositories.dart';
 import 'package:overscript/widgets/widgets.dart';
-import 'package:path/path.dart';
 
 class ScriptEditScreen extends StatefulWidget {
   static const routeNameEdit = '/script-edit';
@@ -34,16 +34,14 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
     setState(() {
       if (widget.editUuid != null) {
         _isNew = false;
-        _script = RepositoryProvider.of<ScriptsStoreRepository>(context)
-            .get(widget.editUuid!);
+        _script = RepositoryProvider.of<DataStoreRepository>(context).get(widget.editUuid!);
       } else {
         _isNew = true;
         _script = StoredScript.empty();
       }
     });
     return Scaffold(
-      appBar: AppBar(
-          title: _isNew ? const Text('New Script') : const Text('Edit Script')),
+      appBar: AppBar(title: _isNew ? const Text('New Script') : const Text('Edit Script')),
       body: buildBody(context),
     );
   }
@@ -94,56 +92,16 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
                       labelText: 'Command',
                       suffixIcon: IconButton(
                           onPressed: () {
-                            _pickExecutable(context, "Select script").then(
-                                (value) => {
-                                      _formKey.currentState!.fields['command']!
-                                          .didChange(value)
-                                    });
+                            _pickExecutable(context, "Select script").then((value) => {_formKey.currentState!.fields['command']!.didChange(value)});
                           },
                           icon: const Icon(Icons.apps_outlined)),
                     ),
                     // valueTransformer: (text) => num.tryParse(text),
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                      validatorFileExists(context,
-                          errorText: "Command must exist")
-                    ]),
+                    validator: FormBuilderValidators.compose([FormBuilderValidators.required(context), validatorFileExists(context, errorText: "Command must exist")]),
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
                   ),
-                  FormBuilderStringListEditor(
-                    name: 'args',
-                    labelText: 'Arguments',
-                  ),
-                  // FormBuilderTextField(
-                  //   autovalidateMode: AutovalidateMode.always,
-                  //   name: 'args_str',
-                  //   readOnly: true,
-                  //   decoration: InputDecoration(
-                  //       labelText: 'Arguments',
-                  //       suffixIcon: IconButton(
-                  //           onPressed: () {
-                  //             showArgsDialog(
-                  //                 context,
-                  //                 _formKey.currentState!.value['args'] ??
-                  //                     _formKey
-                  //                         .currentState!.initialValue['args'],
-                  //                 onDialogOk: (items) => setState(() {
-                  //                       _formKey currentState!.value['args'] =
-                  //                           items;
-                  //                     }));
-                  //           },
-                  //           icon: const Icon(Icons.list))),
-
-                  //   // valueTransformer: (text) => num.tryParse(text),
-                  //   validator: FormBuilderValidators.compose([
-                  //     FormBuilderValidators.required(context),
-                  //     validatorDirExists(context,
-                  //         errorText: "Working directory must exist")
-                  //   ]),
-                  //   keyboardType: TextInputType.text,
-                  //   textInputAction: TextInputAction.next,
-                  // ),
+                  FormBuilderStringListEditor(name: 'args', labelText: 'Arguments', autovalidateMode: AutovalidateMode.disabled),
                   FormBuilderTextField(
                     autovalidateMode: AutovalidateMode.always,
                     name: 'workingDirectory',
@@ -152,21 +110,12 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
                         labelText: 'Working Directory',
                         suffixIcon: IconButton(
                             onPressed: () {
-                              _pickDir(context, "Select Working Directory")
-                                  .then((value) => {
-                                        _formKey.currentState!
-                                            .fields['workingDirectory']!
-                                            .didChange(value)
-                                      });
+                              _pickDir(context, "Select Working Directory").then((value) => {_formKey.currentState!.fields['workingDirectory']!.didChange(value)});
                             },
                             icon: const Icon(Icons.folder_open))),
 
                     // valueTransformer: (text) => num.tryParse(text),
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                      validatorDirExists(context,
-                          errorText: "Working directory must exist")
-                    ]),
+                    validator: FormBuilderValidators.compose([FormBuilderValidators.required(context), validatorDirExists(context, errorText: "Working directory must exist")]),
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
                   ),
@@ -174,6 +123,7 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
                     title: const Text('Run in Docker'),
                     name: 'runInDocker',
                   ),
+                  FormBuilderStringPairListEditor(name: 'envVars', labelText: 'Environment Variables', autovalidateMode: AutovalidateMode.disabled)
                 ],
               ),
             ),
@@ -186,7 +136,30 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
                       color: Theme.of(context).colorScheme.secondary,
                       onPressed: () {
                         if (_formKey.currentState?.saveAndValidate() ?? false) {
+                          if (_isNew) {
+                            BlocProvider.of<DataStoreBloc>(context).add(ScriptStoreAddEvent(
+                              name: _formKey.currentState?.value['name'],
+                              command: _formKey.currentState?.value['command'],
+                              workingDirectory: _formKey.currentState?.value['workingDirectory'],
+                              args: _formKey.currentState?.value['args'],
+                              runInDocker: _formKey.currentState?.value['runInDocker'],
+                              envVars: _formKey.currentState?.value['envVars'],
+                            ));
+                          } else {
+                            BlocProvider.of<DataStoreBloc>(context).add(ScriptStoreEditEvent(
+                              uuid: _script!.uuid,
+                              name: _formKey.currentState?.value['name'],
+                              command: _formKey.currentState?.value['command'],
+                              workingDirectory: _formKey.currentState?.value['workingDirectory'],
+                              args: _formKey.currentState?.value['args'],
+                              runInDocker: _formKey.currentState?.value['runInDocker'],
+                              envVars: _formKey.currentState?.value['envVars'],
+                            ));
+                          }
+
+                          debugPrint('validation success');
                           debugPrint(_formKey.currentState?.value.toString());
+                          Navigator.of(context).pop();
                         } else {
                           debugPrint(_formKey.currentState?.value.toString());
                           debugPrint('validation failed');
@@ -207,8 +180,7 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
                       // color: Theme.of(context).colorScheme.secondary,
                       child: Text(
                         'Reset',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary),
+                        style: TextStyle(color: Theme.of(context).colorScheme.secondary),
                       ),
                     ),
                   ),
@@ -239,16 +211,10 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
     BuildContext context, {
     String? errorText,
   }) =>
-      (valueCandidate) => true == valueCandidate?.isNotEmpty &&
-              !File(valueCandidate!.trim()).existsSync()
-          ? errorText
-          : null;
+      (valueCandidate) => true == valueCandidate?.isNotEmpty && !File(valueCandidate!.trim()).existsSync() ? errorText : null;
   static FormFieldValidator<String> validatorDirExists(
     BuildContext context, {
     String? errorText,
   }) =>
-      (valueCandidate) => true == valueCandidate?.isNotEmpty &&
-              !Directory(valueCandidate!.trim()).existsSync()
-          ? errorText
-          : null;
+      (valueCandidate) => true == valueCandidate?.isNotEmpty && !Directory(valueCandidate!.trim()).existsSync() ? errorText : null;
 }

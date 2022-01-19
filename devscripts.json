@@ -1,0 +1,61 @@
+{
+  "scripts": [
+    {
+      "uuid": "a-uuid-3",
+      "name": "Test Script 2",
+      "command": "test2.sh",
+      "args": [
+        "arg1",
+        "arg2"
+      ],
+      "workingDirectory": "/path/to/morework",
+      "runInDocker": true,
+      "envVars": [
+        {
+          "value1": "thing",
+          "value2": "bob"
+        },
+        {
+          "value1": "which",
+          "value2": "that"
+        }
+      ]
+    },
+    {
+      "uuid": "a-uuid",
+      "name": "Test Script",
+      "command": "/home/mathew/Videos/Kazam_screencast_00000.mp4",
+      "args": [
+        "arg1",
+        "arg2"
+      ],
+      "workingDirectory": "/home/mathew/src-work/ctct_products_darksidemain",
+      "runInDocker": false,
+      "envVars": [
+        {
+          "value1": "thing",
+          "value2": "bob"
+        },
+        {
+          "value1": "which",
+          "value2": "that"
+        }
+      ]
+    },
+    {
+      "uuid": "c73b5880-775a-11ec-85c9-bb99ac7f1da4",
+      "name": "Go Script 4",
+      "command": "/home/mathew/bin/UnpackSnap.sh",
+      "args": [],
+      "workingDirectory": "/home/mathew/src-work/ctct_products_darksidemain",
+      "runInDocker": false,
+      "envVars": [
+        {
+          "value1": "THING",
+          "value2": "bob"
+        }
+      ]
+    }
+  ],
+  "variables": []
+}

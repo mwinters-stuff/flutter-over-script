@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:overscript/repositories/repositories.dart';
 
 import 'custom_alert_dialog.dart';
 
-/// Field for selecting and editing a list of strings.
-class FormBuilderStringListEditor extends FormBuilderField<List<String>> {
+/// Field for selecting and editing a list of string pairs stored in a map.
+class FormBuilderStringPairListEditor
+    extends FormBuilderField<List<StringPair>> {
   final TextInputType? keyboardType;
   final bool obscureText;
   final TextStyle? style;
@@ -40,18 +42,18 @@ class FormBuilderStringListEditor extends FormBuilderField<List<String>> {
   final String labelText;
 
   /// Creates field for selecting a range of dates
-  FormBuilderStringListEditor({
+  FormBuilderStringPairListEditor({
     Key? key,
     //From Super
     required String name,
     required this.labelText,
-    FormFieldValidator<List<String>>? validator,
-    List<String>? initialValue,
+    FormFieldValidator<List<StringPair>>? validator,
+    List<StringPair>? initialValue,
     InputDecoration decoration = const InputDecoration(),
-    ValueChanged<List<String>?>? onChanged,
-    ValueTransformer<List<String>?>? valueTransformer,
+    ValueChanged<List<StringPair>?>? onChanged,
+    ValueTransformer<List<StringPair>?>? valueTransformer,
     bool enabled = true,
-    FormFieldSetter<List<String>>? onSaved,
+    FormFieldSetter<List<StringPair>>? onSaved,
     AutovalidateMode autovalidateMode = AutovalidateMode.disabled,
     VoidCallback? onReset,
     FocusNode? focusNode,
@@ -97,8 +99,8 @@ class FormBuilderStringListEditor extends FormBuilderField<List<String>> {
           onReset: onReset,
           decoration: decoration,
           focusNode: focusNode,
-          builder: (FormFieldState<List<String>?> field) {
-            final state = field as _FormBuilderStringListEditorState;
+          builder: (FormFieldState<List<StringPair>?> field) {
+            final state = field as _FormBuilderStringPairListEditorState;
             return TextField(
                 enabled: state.enabled,
                 style: style,
@@ -134,12 +136,12 @@ class FormBuilderStringListEditor extends FormBuilderField<List<String>> {
         );
 
   @override
-  _FormBuilderStringListEditorState createState() =>
-      _FormBuilderStringListEditorState();
+  _FormBuilderStringPairListEditorState createState() =>
+      _FormBuilderStringPairListEditorState();
 }
 
-class _FormBuilderStringListEditorState
-    extends FormBuilderFieldState<FormBuilderStringListEditor, List<String>> {
+class _FormBuilderStringPairListEditorState extends FormBuilderFieldState<
+    FormBuilderStringPairListEditor, List<StringPair>> {
   late TextEditingController _effectiveController;
 
   InputDecoration get _decoration => widget.decoration.copyWith(
@@ -170,8 +172,8 @@ class _FormBuilderStringListEditorState
         widget.labelText,
         value ?? [],
       );
-      if (picked != null && picked is List<dynamic>) {
-        didChange(List<String>.from(picked));
+      if (picked != null && picked is List) {
+        didChange(List<StringPair>.from(picked));
       }
     }
   }
@@ -181,7 +183,7 @@ class _FormBuilderStringListEditorState
       return '';
     }
 
-    return value!.join(' ');
+    return value!.join(" ");
   }
 
   void _setTextFieldString() {
@@ -189,7 +191,7 @@ class _FormBuilderStringListEditorState
   }
 
   @override
-  void didChange(List<String>? value) {
+  void didChange(List<StringPair>? value) {
     super.didChange(value);
     _setTextFieldString();
   }
@@ -209,7 +211,7 @@ class _OnAddItemEvent {
 }
 
 Future _showDialog(
-    BuildContext context, String title, List<String> items) async {
+    BuildContext context, String title, List<StringPair> items) async {
   final addItemEvent = _OnAddItemEvent();
 
   final listView =
@@ -237,8 +239,8 @@ Future _showDialog(
           onPressed: () {
             Navigator.pop(
                 context,
-                List.from(
-                    listView.items.where((element) => element.isNotEmpty)));
+                List.from(listView.items
+                    .where((element) => element.value1.isNotEmpty)));
           },
           child: const Text('OK'),
         ),
@@ -254,7 +256,7 @@ class _ArgumentsListView extends StatefulWidget {
       {Key? key, required this.items, required this.onAddItemEvent})
       : super(key: key);
 
-  final List<String> items;
+  final List<StringPair> items;
   final _OnAddItemEvent onAddItemEvent;
 
   @override
@@ -266,7 +268,7 @@ class _ArgumentsListViewState extends State<_ArgumentsListView> {
   void initState() {
     super.initState();
     widget.onAddItemEvent.addItemFunc = () => setState(() {
-          widget.items.add('');
+          widget.items.add(const StringPair('', ''));
         });
   }
 
@@ -313,7 +315,7 @@ class _ArgumentsListViewState extends State<_ArgumentsListView> {
   // }
 }
 
-typedef _OnSubmitted = void Function(String value);
+typedef _OnSubmitted = void Function(StringPair value);
 typedef _OnRemove = void Function(int index);
 
 class _ArgumentListTile extends StatefulWidget {
@@ -326,7 +328,7 @@ class _ArgumentListTile extends StatefulWidget {
       : super(key: key);
 
   final int index;
-  final String value;
+  final StringPair value;
   final _OnSubmitted onSubmitted;
   final _OnRemove onRemove;
 
@@ -335,23 +337,27 @@ class _ArgumentListTile extends StatefulWidget {
 }
 
 class _ArgumentListTileState extends State<_ArgumentListTile> {
-  late TextEditingController _controller;
+  late TextEditingController _controller1;
+  late TextEditingController _controller2;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _controller1 = TextEditingController();
+    _controller2 = TextEditingController();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller1.dispose();
+    _controller2.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _controller.text = widget.value;
+    _controller1.text = widget.value.value1;
+    _controller2.text = widget.value.value2;
     return Row(children: [
       Padding(
         padding: const EdgeInsets.all(8),
@@ -364,16 +370,33 @@ class _ArgumentListTileState extends State<_ArgumentListTile> {
         ),
       ),
       Expanded(
-          child: Focus(
-              autofocus: true,
-              onFocusChange: (value) => setState(() {
-                    if (!value) {
-                      widget.onSubmitted(_controller.text);
-                    }
-                  }),
-              child: TextField(
-                controller: _controller,
-              ))),
+          child: Row(children: [
+        Expanded(
+            child: Focus(
+                autofocus: true,
+                onFocusChange: (value) => setState(() {
+                      if (!value) {
+                        widget.onSubmitted(
+                            StringPair(_controller1.text, _controller2.text));
+                      }
+                    }),
+                child: TextField(
+                  controller: _controller1,
+                ))),
+        const Padding(padding: EdgeInsets.all(8), child: Text("=")),
+        Expanded(
+            child: Focus(
+                autofocus: true,
+                onFocusChange: (value) => setState(() {
+                      if (!value) {
+                        widget.onSubmitted(
+                            StringPair(_controller1.text, _controller2.text));
+                      }
+                    }),
+                child: TextField(
+                  controller: _controller2,
+                )))
+      ])),
       Padding(
           padding: const EdgeInsets.all(8),
           child: IconButton(

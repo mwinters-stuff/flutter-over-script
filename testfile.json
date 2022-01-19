@@ -10,10 +10,16 @@
       ],
       "workingDirectory": "/path/to/work",
       "runInDocker": false,
-      "envVars": {
-        "thing": "bob",
-        "which": "that"
-      }
+      "envVars": [
+        {
+          "value1": "thing",
+          "value2": "bob"
+        },
+        {
+          "value1": "which",
+          "value2": "that"
+        }
+      ]
     },
     {
       "uuid": "a-uuid-3",
@@ -25,10 +31,60 @@
       ],
       "workingDirectory": "/path/to/morework",
       "runInDocker": true,
-      "envVars": {
-        "thing": "bob",
-        "which": "that"
-      }
+      "envVars": [
+        {
+          "value1": "thing",
+          "value2": "bob"
+        },
+        {
+          "value1": "which",
+          "value2": "that"
+        }
+      ]
+    }
+  ],
+  "variables": [
+    {
+      "uuid": "a-uuid-1",
+      "name": "var1",
+      "branchValues": [
+        {
+          "value1": "b1",
+          "value2": "v11"
+        },
+        {
+          "value1": "b2",
+          "value2": "v21"
+        }
+      ]
+    },
+    {
+      "uuid": "a-uuid-2",
+      "name": "var2",
+      "branchValues": [
+        {
+          "value1": "b1",
+          "value2": "v21"
+        },
+        {
+          "value1": "b2",
+          "value2": "v22"
+        }
+      ]
+    },
+    {
+      "uuid": "a-uuid-3",
+      "name": "var3",
+      "branchValues": [
+        {
+          "value1": "b1",
+          "value2": "v31"
+        },
+        {
+          "value1": "b2",
+          "value2": "v23"
+        }
+      ]
     }
   ]
 }

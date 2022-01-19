@@ -19,14 +19,8 @@ Future<void> main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   var parser = ArgParser();
-  parser.addOption('script-path',
-      abbr: 't',
-      help: 'path to where the scripts are',
-      defaultsTo: p.dirname(Platform.resolvedExecutable));
-  parser.addOption('source-path',
-      abbr: 's',
-      help: 'path to where the source is rooted',
-      defaultsTo: p.join(Platform.environment['HOME']!, 'src'));
+  parser.addOption('script-path', abbr: 't', help: 'path to where the scripts are', defaultsTo: p.dirname(Platform.resolvedExecutable));
+  parser.addOption('source-path', abbr: 's', help: 'path to where the source is rooted', defaultsTo: p.join(Platform.environment['HOME']!, 'src'));
 
   parser.addFlag('help', abbr: 'h', defaultsTo: false);
 
@@ -41,20 +35,15 @@ Future<void> main(List<String> arguments) async {
   final sourcePath = args['source-path'];
   final preferences = await StreamingSharedPreferences.instance;
 
-  var configurationRepository = ConfigurationRepository(
-      preferences: preferences, scriptPath: scriptPath, sourcePath: sourcePath);
+  var configurationRepository = ConfigurationRepository(preferences: preferences, scriptPath: scriptPath, sourcePath: sourcePath);
 
   runApp(MultiRepositoryProvider(providers: [
-    RepositoryProvider<ConfigurationRepository>(
-        create: (context) => configurationRepository),
-    RepositoryProvider<OldScriptsRepository>(
-        create: (context) => OldScriptsRepository(context)),
-    RepositoryProvider<BranchRepository>(
-        create: (context) => BranchRepository()),
+    RepositoryProvider<ConfigurationRepository>(create: (context) => configurationRepository),
+    RepositoryProvider<OldScriptsRepository>(create: (context) => OldScriptsRepository(context)),
+    RepositoryProvider<BranchRepository>(create: (context) => BranchRepository()),
     RepositoryProvider<PtyRepository>(create: (context) => PtyRepository()),
     RepositoryProvider<KittyRepository>(create: (context) => KittyRepository()),
-    RepositoryProvider<ScriptsStoreRepository>(
-        create: (context) => ScriptsStoreRepository()),
+    RepositoryProvider<DataStoreRepository>(create: (context) => DataStoreRepository()),
   ], child: const MyApp()));
 }
 
@@ -63,9 +52,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final windowRect = RepositoryProvider.of<ConfigurationRepository>(context)
-        .windowRect
-        .getValue();
+    final windowRect = RepositoryProvider.of<ConfigurationRepository>(context).windowRect.getValue();
     if (!windowRect.isEmpty) {
       setWindowFrame(windowRect);
     }
@@ -79,30 +66,14 @@ class MyApp extends StatelessWidget {
     //             .setValue(windowPrefs.frame)));
     return MultiBlocProvider(
       providers: [
-        BlocProvider<ConfigurationBloc>(
-            create: (context) => ConfigurationBloc(
-                configurationRepository:
-                    RepositoryProvider.of<ConfigurationRepository>(context))),
+        BlocProvider<ConfigurationBloc>(create: (context) => ConfigurationBloc(configurationRepository: RepositoryProvider.of<ConfigurationRepository>(context))),
         BlocProvider<OldScriptsBloc>(
-            create: (context) => OldScriptsBloc(
-                scriptsRepository:
-                    RepositoryProvider.of<OldScriptsRepository>(context),
-                configurationRepository:
-                    RepositoryProvider.of<ConfigurationRepository>(context))),
-        BlocProvider<BranchesBloc>(
-            create: (context) => BranchesBloc(context,
-                branchesRepository:
-                    RepositoryProvider.of<BranchRepository>(context))),
-        BlocProvider<PtyBloc>(
-            create: (context) => PtyBloc(
-                repository: RepositoryProvider.of<PtyRepository>(context))),
-        BlocProvider<KittyBloc>(
-            create: (context) => KittyBloc(
-                repository: RepositoryProvider.of<KittyRepository>(context))),
-        BlocProvider<ScriptsStoreBloc>(
-            create: (context) => ScriptsStoreBloc(
-                repository:
-                    RepositoryProvider.of<ScriptsStoreRepository>(context)))
+            create: (context) =>
+                OldScriptsBloc(scriptsRepository: RepositoryProvider.of<OldScriptsRepository>(context), configurationRepository: RepositoryProvider.of<ConfigurationRepository>(context))),
+        BlocProvider<BranchesBloc>(create: (context) => BranchesBloc(context, branchesRepository: RepositoryProvider.of<BranchRepository>(context))),
+        BlocProvider<PtyBloc>(create: (context) => PtyBloc(repository: RepositoryProvider.of<PtyRepository>(context))),
+        BlocProvider<KittyBloc>(create: (context) => KittyBloc(repository: RepositoryProvider.of<KittyRepository>(context))),
+        BlocProvider<DataStoreBloc>(create: (context) => DataStoreBloc(repository: RepositoryProvider.of<DataStoreRepository>(context)))
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -113,23 +84,15 @@ class MyApp extends StatelessWidget {
           onGenerateRoute: (settings) {
             switch (settings.name) {
               case SettingsScreen.routeName:
-                return MaterialPageRoute(
-                    builder: (BuildContext context) => const SettingsScreen());
+                return MaterialPageRoute(builder: (BuildContext context) => const SettingsScreen());
               case ScriptsScreen.routeName:
-                return MaterialPageRoute(
-                    builder: (BuildContext context) => const ScriptsScreen());
+                return MaterialPageRoute(builder: (BuildContext context) => const ScriptsScreen());
               case ScriptEditScreen.routeNameAdd:
-                return MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        const ScriptEditScreen());
+                return MaterialPageRoute(builder: (BuildContext context) => const ScriptEditScreen());
               case ScriptEditScreen.routeNameEdit:
-                return MaterialPageRoute(
-                    builder: (BuildContext context) => ScriptEditScreen(
-                        editUuid: settings.arguments as String));
+                return MaterialPageRoute(builder: (BuildContext context) => ScriptEditScreen(editUuid: settings.arguments as String));
               default:
-                return MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        const AppScaffold(title: 'Overscript'));
+                return MaterialPageRoute(builder: (BuildContext context) => const AppScaffold(title: 'Overscript'));
             }
           },
           localizationsDelegates: const [
