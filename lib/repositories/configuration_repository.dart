@@ -9,28 +9,17 @@ class ConfigurationRepository {
   final Preference<String> editorExecutable;
   final Preference<String> selectedScriptName;
   final Preference<String> selectedBranchName;
-  final Preference<bool> usePrism;
-  final Preference<bool> useGuide;
   final Preference<bool> useKitty;
   final Preference<Rect> windowRect;
+  final Preference<String> scriptDataFile;
 
-  ConfigurationRepository(
-      {required StreamingSharedPreferences preferences,
-      required String scriptPath,
-      required String sourcePath})
-      : scriptPath =
-            preferences.getString('script-path', defaultValue: scriptPath),
-        sourcePath =
-            preferences.getString('source-path', defaultValue: sourcePath),
-        editorExecutable =
-            preferences.getString('editor-executable', defaultValue: 'code'),
-        selectedScriptName =
-            preferences.getString('selected-script', defaultValue: ''),
-        selectedBranchName =
-            preferences.getString('selected-branch', defaultValue: ''),
-        usePrism = preferences.getBool('use-prism', defaultValue: false),
-        useGuide = preferences.getBool('use-guide', defaultValue: false),
+  ConfigurationRepository({required StreamingSharedPreferences preferences, required String scriptPath, required String sourcePath})
+      : scriptPath = preferences.getString('script-path', defaultValue: scriptPath),
+        sourcePath = preferences.getString('source-path', defaultValue: sourcePath),
+        editorExecutable = preferences.getString('editor-executable', defaultValue: 'code'),
+        selectedScriptName = preferences.getString('selected-script', defaultValue: ''),
+        selectedBranchName = preferences.getString('selected-branch', defaultValue: ''),
         useKitty = preferences.getBool('use-kitty', defaultValue: false),
-        windowRect = preferences.getCustomValue<Rect>('window',
-            defaultValue: Rect.zero, adapter: WindowPreferenceAdapter.instance);
+        windowRect = preferences.getCustomValue<Rect>('window', defaultValue: Rect.zero, adapter: WindowPreferenceAdapter.instance),
+        scriptDataFile = preferences.getString('script-data-file', defaultValue: 'devscripts.json');
 }

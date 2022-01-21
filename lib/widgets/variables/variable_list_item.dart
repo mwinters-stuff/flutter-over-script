@@ -1,29 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overscript/bloc/bloc.dart';
-import 'package:overscript/repositories/stored_script.dart';
-import 'package:overscript/widgets/widgets.dart';
+import 'package:overscript/repositories/repositories.dart';
+import 'package:overscript/widgets/variables/variable_edit_screen.dart';
 
-typedef ScriptListItemSelectedCallback = void Function(StoredScript script, bool selected);
+typedef VariableListItemSelectedCallback = void Function(StoredVariable variable, bool selected);
 
-class ScriptListItem extends StatefulWidget {
-  final StoredScript storedScript;
-  final ScriptListItemSelectedCallback? selectedCallback;
+class VariableListItem extends StatefulWidget {
+  final StoredVariable storedVariable;
+  final VariableListItemSelectedCallback? selectedCallback;
 
-  const ScriptListItem({Key? key, required this.storedScript, this.selectedCallback}) : super(key: key);
+  const VariableListItem({Key? key, required this.storedVariable, this.selectedCallback}) : super(key: key);
 
   @override
-  _ScriptListItemState createState() => _ScriptListItemState();
+  _VariableListItemState createState() => _VariableListItemState();
 }
 
-class _ScriptListItemState extends State<ScriptListItem> {
-  late StoredScript _script;
+class _VariableListItemState extends State<VariableListItem> {
+  late StoredVariable _variable;
   bool _checked = false;
 
   @override
   void initState() {
     super.initState();
-    _script = widget.storedScript;
+    _variable = widget.storedVariable;
+  }
+
+  String _branchValuesList(List<StringPair> strings) {
+    String rv = '';
+    for (var pair in strings) {
+      rv = rv + pair.value1 + " = " + pair.value2 + " ";
+    }
+    return rv;
   }
 
   @override
@@ -31,25 +39,24 @@ class _ScriptListItemState extends State<ScriptListItem> {
     return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Card(
-          margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
           color: _checked ? Theme.of(context).highlightColor : Theme.of(context).colorScheme.surface,
           child: InkWell(
             child: ListTile(
-              title: Text(_script.name),
-              subtitle: Text(_script.command + " " + _script.args.join(" ") + "\n" + _script.workingDirectory),
-              isThreeLine: true,
+              title: Text(_variable.name),
+              subtitle: Text(_branchValuesList(_variable.branchValues)),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  IconButton(tooltip: 'Edit Script', onPressed: () => Navigator.pushNamed(context, ScriptEditScreen.routeNameEdit, arguments: _script.uuid), icon: const Icon(Icons.edit)),
+                  IconButton(tooltip: 'Edit Variable', onPressed: () => Navigator.pushNamed(context, VariableEditScreen.routeNameEdit, arguments: _variable.uuid), icon: const Icon(Icons.edit)),
                   IconButton(
-                      tooltip: 'Delete Script',
+                      tooltip: 'Delete Variable',
                       onPressed: () => {
                             showDialog<String>(
                                 context: context,
                                 builder: (BuildContext context) => AlertDialog(
-                                      title: const Text('Delete Script?'),
-                                      content: Text(_script.name),
+                                      title: const Text('Delete Branch?'),
+                                      content: Text(_variable.name),
                                       actions: <Widget>[
                                         TextButton(
                                           onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -58,7 +65,8 @@ class _ScriptListItemState extends State<ScriptListItem> {
                                         TextButton(
                                           onPressed: () {
                                             Navigator.pop(context, 'OK');
-                                            BlocProvider.of<DataStoreBloc>(context).add(ScriptStoreDeleteEvent(uuid: _script.uuid));
+                                            BlocProvider.of<DataStoreBloc>(context).add(VariableStoreDeleteEvent(uuid: _variable.uuid));
+                                            BlocProvider.of<DataStoreBloc>(context).add(DataStoreSave(RepositoryProvider.of<ConfigurationRepository>(context).scriptDataFile.getValue()));
                                           },
                                           child: const Text('OK'),
                                         ),
@@ -70,7 +78,7 @@ class _ScriptListItemState extends State<ScriptListItem> {
               ),
             ),
             onTap: () {
-              widget.selectedCallback!(_script, !_checked);
+              widget.selectedCallback!(_variable, !_checked);
               setState(() {
                 _checked = !_checked;
               });

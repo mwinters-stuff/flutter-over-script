@@ -81,3 +81,30 @@ class VariableStoreDeleteEvent extends DataStoreEvent {
   @override
   List<Object> get props => [uuid];
 }
+
+class BranchStoreAddEvent extends DataStoreEvent {
+  final String name;
+  final String directory;
+  const BranchStoreAddEvent({required this.name, required this.directory});
+
+  @override
+  List<Object> get props => [name, directory];
+}
+
+class BranchStoreEditEvent extends DataStoreEvent {
+  final String uuid;
+  final String name;
+  final String directory;
+  const BranchStoreEditEvent({required this.uuid, required this.name, required this.directory});
+
+  @override
+  List<Object> get props => [uuid, name, directory];
+}
+
+class BranchStoreDeleteEvent extends DataStoreEvent {
+  final String uuid;
+  const BranchStoreDeleteEvent({required this.uuid});
+
+  @override
+  List<Object> get props => [uuid];
+}

@@ -16,31 +16,20 @@ class DataStoreUpdating extends DataStoreState {}
 class DataStoreUpdated extends DataStoreState {
   final List<StoredScript> scripts;
   final List<StoredVariable> variables;
+  final List<StoredBranch> branches;
 
-  const DataStoreUpdated(this.scripts, this.variables);
+  const DataStoreUpdated(this.scripts, this.variables, this.branches);
 
   @override
-  List<Object> get props => [scripts, variables];
+  List<Object> get props => [scripts, variables, branches];
 }
 
-class DataStoreSaving extends DataStoreState {
-  final List<StoredScript> scripts;
-  final List<StoredVariable> variables;
-
-  const DataStoreSaving(this.scripts, this.variables);
-
-  @override
-  List<Object> get props => [scripts, variables];
+class DataStoreSaving extends DataStoreUpdated {
+  const DataStoreSaving(List<StoredScript> scripts, List<StoredVariable> variables, List<StoredBranch> branches) : super(scripts, variables, branches);
 }
 
-class DataStoreSaved extends DataStoreState {
-  final List<StoredScript> scripts;
-  final List<StoredVariable> variables;
-
-  const DataStoreSaved(this.scripts, this.variables);
-
-  @override
-  List<Object> get props => [scripts, variables];
+class DataStoreSaved extends DataStoreUpdated {
+  const DataStoreSaved(List<StoredScript> scripts, List<StoredVariable> variables, List<StoredBranch> branches) : super(scripts, variables, branches);
 }
 
 // class DataStoreScriptsUpdated extends DataStoreState {

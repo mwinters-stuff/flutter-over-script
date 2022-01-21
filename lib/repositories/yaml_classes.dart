@@ -33,15 +33,11 @@ class YamlTab {
     if (title.isEmpty) {
       throw ArgumentError.value(title, 'title', 'Cannot be empty.');
     }
-    if (indocker() == option.yes &&
-        buildallmaster() == option.no &&
-        dockerPath!.isEmpty) {
-      throw ArgumentError.value(
-          title, 'docker-path', 'Cannot be empty when indocker.');
+    if (indocker() == option.yes && buildallmaster() == option.no && dockerPath!.isEmpty) {
+      throw ArgumentError.value(title, 'docker-path', 'Cannot be empty when indocker.');
     }
     if (buildallmaster() == option.yes && buildall() == option.yes) {
-      throw ArgumentError.value(title, 'buildall-master',
-          'Cannot be yes when option buildall = yes.');
+      throw ArgumentError.value(title, 'buildall-master', 'Cannot be yes when option buildall = yes.');
     }
     if (buildallmaster() == option.both) {
       throw ArgumentError.value(title, 'buildall-master', 'Cannot be both.');
@@ -49,8 +45,7 @@ class YamlTab {
     if (buildall() == option.both) {
       throw ArgumentError.value(title, 'buildall', 'Cannot be both.');
     }
-    if (buildallmaster() == option.no &&
-        (commands == null || commands!.isEmpty)) {
+    if (buildallmaster() == option.no && (commands == null || commands!.isEmpty)) {
       throw ArgumentError.value(title, 'commands', 'Cannot be empty.');
     }
   }
@@ -107,36 +102,10 @@ class YamlTab {
   String toString() => '${toJson()}';
 
   void execute(BuildContext context, Branch branch, bool singleScript) {
-    final configurationRepository =
-        RepositoryProvider.of<ConfigurationRepository>(context);
+    final configurationRepository = RepositoryProvider.of<ConfigurationRepository>(context);
     final kittyRepository = RepositoryProvider.of<KittyRepository>(context);
 
-    if (!singleScript) {
-      if (configurationRepository.useGuide.getValue() &&
-          forguide() == option.no) {
-        return;
-      }
-
-      if (!configurationRepository.useGuide.getValue() &&
-          forguide() == option.yes) {
-        return;
-      }
-
-      if (configurationRepository.usePrism.getValue() &&
-          forprism() == option.no) {
-        return;
-      }
-
-      if (!configurationRepository.usePrism.getValue() &&
-          forprism() == option.yes) {
-        return;
-      }
-    }
-
-    final interpolate = branch.getInterpolate(
-        context,
-        configurationRepository.useGuide.getValue(),
-        configurationRepository.scriptPath.getValue());
+    final interpolate = branch.getInterpolate(context, configurationRepository.scriptPath.getValue());
     if (interpolate == null) {
       return;
     }
@@ -148,21 +117,9 @@ class YamlTab {
           dog.i('Run in docker "$intercommand"');
 
           if (configurationRepository.useKitty.getValue()) {
-            kittyRepository.addPtyDocker(
-                context,
-                interpolate['root']!,
-                configurationRepository.scriptPath.getValue(),
-                dockerPath!,
-                title,
-                intercommand);
+            kittyRepository.addPtyDocker(context, interpolate['root']!, configurationRepository.scriptPath.getValue(), dockerPath!, title, intercommand);
           } else {
-            runDockerInTab(
-                context,
-                interpolate['root']!,
-                configurationRepository.scriptPath.getValue(),
-                dockerPath!,
-                title,
-                intercommand);
+            runDockerInTab(context, interpolate['root']!, configurationRepository.scriptPath.getValue(), dockerPath!, title, intercommand);
           }
         }
       }
@@ -176,13 +133,9 @@ class YamlTab {
         }
       }
       if (configurationRepository.useKitty.getValue()) {
-        kittyRepository.addPty(
-            context, title, newCommands, interpolate['root']!);
+        kittyRepository.addPty(context, title, newCommands, interpolate['root']!);
       } else {
-        BlocProvider.of<PtyBloc>(context).add(PtyAddEvent(
-            tabTitle: title,
-            commands: newCommands,
-            workingDirectory: interpolate['root']));
+        BlocProvider.of<PtyBloc>(context).add(PtyAddEvent(tabTitle: title, commands: newCommands, workingDirectory: interpolate['root']));
       }
     }
   }
@@ -222,8 +175,7 @@ class YamlScript {
       if (tab.buildallmaster() == option.no) {
         tab.execute(context, branch, tabs.length == 1);
       } else {
-        final scripts = RepositoryProvider.of<OldScriptsRepository>(context)
-            .getBuildAllScripts();
+        final scripts = RepositoryProvider.of<OldScriptsRepository>(context).getBuildAllScripts();
         for (var element in scripts) {
           element.execute(context, branch);
         }

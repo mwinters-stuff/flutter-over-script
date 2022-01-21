@@ -233,8 +233,12 @@ void main() {
       repository.addVariable(uuid: "a-uuid-1", name: "var1", branchValues: [const StringPair("b1", "v11"), const StringPair("b2", "v21")]);
       repository.addVariable(uuid: "a-uuid-2", name: "var2", branchValues: [const StringPair("b1", "v21"), const StringPair("b2", "v22")]);
       repository.addVariable(uuid: "a-uuid-3", name: "var3", branchValues: [const StringPair("b1", "v31"), const StringPair("b2", "v23")]);
-
       expect(repository.variables.length, 3);
+
+      repository.addBranch(uuid: 'uuid-1', name: 'master', directory: '/src/master');
+      repository.addBranch(uuid: 'uuid-2', name: 'branch1', directory: '/src/branch1');
+
+      expect(repository.branches.length, 2);
       repository.save('testfile.json');
 
       DataStoreRepository repository2 = DataStoreRepository();
@@ -273,6 +277,16 @@ void main() {
       expect(repository2.variables[2].uuid, equals("a-uuid-3"));
       expect(repository2.variables[2].name, equals("var3"));
       expect(repository2.variables[2].branchValues, equals([const StringPair("b1", "v31"), const StringPair("b2", "v23")]));
+
+      expect(repository2.branches.length, 2);
+
+      expect(repository2.branches[0].uuid, equals("uuid-1"));
+      expect(repository2.branches[0].name, equals("master"));
+      expect(repository2.branches[0].directory, equals("/src/master"));
+
+      expect(repository2.branches[1].uuid, equals("uuid-2"));
+      expect(repository2.branches[1].name, equals("branch1"));
+      expect(repository2.branches[1].directory, equals("/src/branch1"));
     });
   });
 }

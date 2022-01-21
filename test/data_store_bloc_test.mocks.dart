@@ -17,92 +17,47 @@ import 'package:overscript/repositories/repositories.dart' as _i2;
 /// A class which mocks [DataStoreRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDataStoreRepository extends _i1.Mock
-    implements _i2.DataStoreRepository {
+class MockDataStoreRepository extends _i1.Mock implements _i2.DataStoreRepository {
   MockDataStoreRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  String? checkScriptNameUsed(String? name) =>
-      (super.noSuchMethod(Invocation.method(#checkScriptNameUsed, [name]))
-          as String?);
+  String? checkScriptNameUsed(String? name) => (super.noSuchMethod(Invocation.method(#checkScriptNameUsed, [name])) as String?);
   @override
-  String? checkVariableNameUsed(String? name) =>
-      (super.noSuchMethod(Invocation.method(#checkVariableNameUsed, [name]))
-          as String?);
+  String? checkVariableNameUsed(String? name) => (super.noSuchMethod(Invocation.method(#checkVariableNameUsed, [name])) as String?);
   @override
-  void load(String? filename) =>
-      super.noSuchMethod(Invocation.method(#load, [filename]),
-          returnValueForMissingStub: null);
+  String? checkBranchNameOrDirectoryUsed(String? name, String? directory) => (super.noSuchMethod(Invocation.method(#checkBranchNameOrDirectoryUsed, [name, directory])) as String?);
   @override
-  _i2.StoredScript? get(String? uuid) =>
-      (super.noSuchMethod(Invocation.method(#get, [uuid]))
-          as _i2.StoredScript?);
+  void load(String? filename) => super.noSuchMethod(Invocation.method(#load, [filename]), returnValueForMissingStub: null);
   @override
-  void addScript(
-          {String? uuid,
-          String? name,
-          String? command,
-          List<String>? args,
-          String? workingDirectory,
-          bool? runInDocker,
-          List<_i2.StringPair>? envVars}) =>
-      super.noSuchMethod(
-          Invocation.method(#addScript, [], {
-            #uuid: uuid,
-            #name: name,
-            #command: command,
-            #args: args,
-            #workingDirectory: workingDirectory,
-            #runInDocker: runInDocker,
-            #envVars: envVars
-          }),
-          returnValueForMissingStub: null);
+  _i2.StoredScript? getScript(String? uuid) => (super.noSuchMethod(Invocation.method(#get, [uuid])) as _i2.StoredScript?);
   @override
-  void editScript(
-          {String? uuid,
-          String? name,
-          String? command,
-          List<String>? args,
-          String? workingDirectory,
-          bool? runInDocker,
-          List<_i2.StringPair>? envVars}) =>
-      super.noSuchMethod(
-          Invocation.method(#editScript, [], {
-            #uuid: uuid,
-            #name: name,
-            #command: command,
-            #args: args,
-            #workingDirectory: workingDirectory,
-            #runInDocker: runInDocker,
-            #envVars: envVars
-          }),
-          returnValueForMissingStub: null);
+  void addScript({String? uuid, String? name, String? command, List<String>? args, String? workingDirectory, bool? runInDocker, List<_i2.StringPair>? envVars}) => super.noSuchMethod(
+      Invocation.method(#addScript, [], {#uuid: uuid, #name: name, #command: command, #args: args, #workingDirectory: workingDirectory, #runInDocker: runInDocker, #envVars: envVars}),
+      returnValueForMissingStub: null);
   @override
-  void deleteScript(String? uuid) =>
-      super.noSuchMethod(Invocation.method(#deleteScript, [uuid]),
-          returnValueForMissingStub: null);
+  void editScript({String? uuid, String? name, String? command, List<String>? args, String? workingDirectory, bool? runInDocker, List<_i2.StringPair>? envVars}) => super.noSuchMethod(
+      Invocation.method(#editScript, [], {#uuid: uuid, #name: name, #command: command, #args: args, #workingDirectory: workingDirectory, #runInDocker: runInDocker, #envVars: envVars}),
+      returnValueForMissingStub: null);
   @override
-  void addVariable(
-          {String? uuid, String? name, List<_i2.StringPair>? branchValues}) =>
-      super.noSuchMethod(
-          Invocation.method(#addVariable, [],
-              {#uuid: uuid, #name: name, #branchValues: branchValues}),
-          returnValueForMissingStub: null);
+  void deleteScript(String? uuid) => super.noSuchMethod(Invocation.method(#deleteScript, [uuid]), returnValueForMissingStub: null);
   @override
-  void editVariable(
-          {String? uuid, String? name, List<_i2.StringPair>? branchValues}) =>
-      super.noSuchMethod(
-          Invocation.method(#editVariable, [],
-              {#uuid: uuid, #name: name, #branchValues: branchValues}),
-          returnValueForMissingStub: null);
+  void addVariable({String? uuid, String? name, List<_i2.StringPair>? branchValues}) =>
+      super.noSuchMethod(Invocation.method(#addVariable, [], {#uuid: uuid, #name: name, #branchValues: branchValues}), returnValueForMissingStub: null);
   @override
-  void deleteVariable(String? uuid) =>
-      super.noSuchMethod(Invocation.method(#deleteVariable, [uuid]),
-          returnValueForMissingStub: null);
+  void editVariable({String? uuid, String? name, List<_i2.StringPair>? branchValues}) =>
+      super.noSuchMethod(Invocation.method(#editVariable, [], {#uuid: uuid, #name: name, #branchValues: branchValues}), returnValueForMissingStub: null);
   @override
-  void save(String? filename) =>
-      super.noSuchMethod(Invocation.method(#save, [filename]),
-          returnValueForMissingStub: null);
+  void deleteVariable(String? uuid) => super.noSuchMethod(Invocation.method(#deleteVariable, [uuid]), returnValueForMissingStub: null);
+  @override
+  void addBranch({String? uuid, String? name, String? directory}) =>
+      super.noSuchMethod(Invocation.method(#addBranch, [], {#uuid: uuid, #name: name, #directory: directory}), returnValueForMissingStub: null);
+  @override
+  void editBranch({String? uuid, String? name, String? directory}) =>
+      super.noSuchMethod(Invocation.method(#editBranch, [], {#uuid: uuid, #name: name, #directory: directory}), returnValueForMissingStub: null);
+  @override
+  void deleteBranch(String? uuid) => super.noSuchMethod(Invocation.method(#deleteBranch, [uuid]), returnValueForMissingStub: null);
+  @override
+  void save(String? filename) => super.noSuchMethod(Invocation.method(#save, [filename]), returnValueForMissingStub: null);
 }

@@ -23,6 +23,8 @@ void main() {
 
     var storedVariable = const StoredVariable(uuid: "a-uuid-1", name: "var1", branchValues: [StringPair("b1", "v11"), StringPair("b2", "v21")]);
 
+    var storedBranch = const StoredBranch(uuid: 'uuid', name: 'master', directory: '/some/directory');
+
     MockDataStoreRepository _mockRepository = MockDataStoreRepository();
 
     setUp(() {
@@ -34,10 +36,11 @@ void main() {
       build: () {
         when(_mockRepository.scripts).thenReturn(<StoredScript>[]);
         when(_mockRepository.variables).thenReturn(<StoredVariable>[]);
+        when(_mockRepository.branches).thenReturn(<StoredBranch>[]);
         return dataStoreBloc;
       },
       act: (bloc) => bloc.add(const DataStoreLoad('test.json')),
-      expect: () => [DataStoreLoading(), const DataStoreUpdated(<StoredScript>[], <StoredVariable>[])],
+      expect: () => [DataStoreLoading(), const DataStoreUpdated(<StoredScript>[], <StoredVariable>[], <StoredBranch>[])],
       verify: (bloc) => verify(_mockRepository.load('test.json')).called(1),
     );
 
@@ -46,12 +49,13 @@ void main() {
       build: () {
         when(_mockRepository.scripts).thenReturn(<StoredScript>[]);
         when(_mockRepository.variables).thenReturn(<StoredVariable>[]);
+        when(_mockRepository.branches).thenReturn(<StoredBranch>[]);
         return dataStoreBloc;
       },
       act: (bloc) => bloc.add(const DataStoreSave('test.json')),
       expect: () => [
-        const DataStoreSaving(<StoredScript>[], <StoredVariable>[]),
-        const DataStoreSaved(<StoredScript>[], <StoredVariable>[]),
+        const DataStoreSaving(<StoredScript>[], <StoredVariable>[], <StoredBranch>[]),
+        const DataStoreSaved(<StoredScript>[], <StoredVariable>[], <StoredBranch>[]),
       ],
       verify: (bloc) => verify(_mockRepository.save('test.json')).called(1),
     );
@@ -61,6 +65,7 @@ void main() {
       build: () {
         when(_mockRepository.scripts).thenReturn(<StoredScript>[storedScript]);
         when(_mockRepository.variables).thenReturn(<StoredVariable>[storedVariable]);
+        when(_mockRepository.branches).thenReturn(<StoredBranch>[storedBranch]);
         return dataStoreBloc;
       },
       act: (bloc) => bloc.add(const ScriptStoreAddEvent(
@@ -72,7 +77,7 @@ void main() {
           envVars: [StringPair("thing", "bob"), StringPair("which", "that")])),
       expect: () => [
         DataStoreUpdating(),
-        DataStoreUpdated([storedScript], [storedVariable]),
+        DataStoreUpdated([storedScript], [storedVariable], [storedBranch]),
       ],
       verify: (bloc) => verify(_mockRepository.addScript(
           uuid: argThat(isNotEmpty, named: 'uuid'),
@@ -88,6 +93,7 @@ void main() {
         build: () {
           when(_mockRepository.scripts).thenReturn(<StoredScript>[storedScript]);
           when(_mockRepository.variables).thenReturn(<StoredVariable>[storedVariable]);
+          when(_mockRepository.branches).thenReturn(<StoredBranch>[storedBranch]);
           return dataStoreBloc;
         },
         act: (bloc) => bloc.add(const ScriptStoreEditEvent(
@@ -100,7 +106,7 @@ void main() {
             envVars: [StringPair("thing", "bob"), StringPair("which", "that")])),
         expect: () => [
               DataStoreUpdating(),
-              DataStoreUpdated([storedScript], [storedVariable]),
+              DataStoreUpdated([storedScript], [storedVariable], [storedBranch]),
             ],
         verify: (bloc) => verify(_mockRepository.editScript(
             uuid: 'uuid',
@@ -115,12 +121,13 @@ void main() {
         build: () {
           when(_mockRepository.scripts).thenReturn(<StoredScript>[storedScript]);
           when(_mockRepository.variables).thenReturn(<StoredVariable>[storedVariable]);
+          when(_mockRepository.branches).thenReturn(<StoredBranch>[storedBranch]);
           return dataStoreBloc;
         },
         act: (bloc) => bloc.add(const ScriptStoreDeleteEvent(uuid: 'uuid')),
         expect: () => [
               DataStoreUpdating(),
-              DataStoreUpdated([storedScript], [storedVariable]),
+              DataStoreUpdated([storedScript], [storedVariable], [storedBranch]),
             ],
         verify: (bloc) => verify(_mockRepository.deleteScript('uuid')).called(1));
 
@@ -128,12 +135,13 @@ void main() {
         build: () {
           when(_mockRepository.scripts).thenReturn(<StoredScript>[storedScript]);
           when(_mockRepository.variables).thenReturn(<StoredVariable>[storedVariable]);
+          when(_mockRepository.branches).thenReturn(<StoredBranch>[storedBranch]);
           return dataStoreBloc;
         },
         act: (bloc) => bloc.add(const VariableStoreAddEvent(name: 'Test Script', branchValues: [StringPair("b1", "v11"), StringPair("b2", "v21")])),
         expect: () => [
               DataStoreUpdating(),
-              DataStoreUpdated([storedScript], [storedVariable]),
+              DataStoreUpdated([storedScript], [storedVariable], [storedBranch]),
             ],
         verify: (bloc) =>
             verify(_mockRepository.addVariable(uuid: argThat(isNotEmpty, named: 'uuid'), name: 'Test Script', branchValues: [const StringPair("b1", "v11"), const StringPair("b2", "v21")])).called(1));
@@ -147,7 +155,7 @@ void main() {
         act: (bloc) => bloc.add(const VariableStoreEditEvent(uuid: 'a-uuid-1', name: 'Test Script', branchValues: [StringPair("b1", "v11"), StringPair("b2", "v21")])),
         expect: () => [
               DataStoreUpdating(),
-              DataStoreUpdated([storedScript], [storedVariable]),
+              DataStoreUpdated([storedScript], [storedVariable], [storedBranch]),
             ],
         verify: (bloc) => verify(_mockRepository.editVariable(uuid: 'a-uuid-1', name: 'Test Script', branchValues: [const StringPair("b1", "v11"), const StringPair("b2", "v21")])).called(1));
 
@@ -155,13 +163,56 @@ void main() {
         build: () {
           when(_mockRepository.scripts).thenReturn(<StoredScript>[storedScript]);
           when(_mockRepository.variables).thenReturn(<StoredVariable>[storedVariable]);
+          when(_mockRepository.branches).thenReturn(<StoredBranch>[storedBranch]);
           return dataStoreBloc;
         },
         act: (bloc) => bloc.add(const VariableStoreDeleteEvent(uuid: 'a-uuid-1')),
         expect: () => [
               DataStoreUpdating(),
-              DataStoreUpdated([storedScript], [storedVariable]),
+              DataStoreUpdated([storedScript], [storedVariable], [storedBranch]),
             ],
         verify: (bloc) => verify(_mockRepository.deleteVariable('a-uuid-1')).called(1));
+
+    blocTest<DataStoreBloc, DataStoreState>('Adds branch to store.',
+        build: () {
+          when(_mockRepository.scripts).thenReturn(<StoredScript>[storedScript]);
+          when(_mockRepository.variables).thenReturn(<StoredVariable>[storedVariable]);
+          when(_mockRepository.branches).thenReturn(<StoredBranch>[storedBranch]);
+          return dataStoreBloc;
+        },
+        act: (bloc) => bloc.add(const BranchStoreAddEvent(name: 'branch1', directory: '/some/src/branch1')),
+        expect: () => [
+              DataStoreUpdating(),
+              DataStoreUpdated([storedScript], [storedVariable], [storedBranch]),
+            ],
+        verify: (bloc) => verify(_mockRepository.addBranch(uuid: argThat(isNotEmpty, named: 'uuid'), name: 'branch1', directory: '/some/src/branch1')).called(1));
+
+    blocTest<DataStoreBloc, DataStoreState>('Edits branch in store.',
+        build: () {
+          when(_mockRepository.scripts).thenReturn(<StoredScript>[storedScript]);
+          when(_mockRepository.variables).thenReturn(<StoredVariable>[storedVariable]);
+          when(_mockRepository.branches).thenReturn(<StoredBranch>[storedBranch]);
+          return dataStoreBloc;
+        },
+        act: (bloc) => bloc.add(const BranchStoreEditEvent(uuid: 'a-uuid-1', name: 'branch3', directory: '/some/src/branch2')),
+        expect: () => [
+              DataStoreUpdating(),
+              DataStoreUpdated([storedScript], [storedVariable], [storedBranch]),
+            ],
+        verify: (bloc) => verify(_mockRepository.editBranch(uuid: 'a-uuid-1', name: 'branch3', directory: '/some/src/branch2')).called(1));
+
+    blocTest<DataStoreBloc, DataStoreState>('Delete branch in store.',
+        build: () {
+          when(_mockRepository.scripts).thenReturn(<StoredScript>[storedScript]);
+          when(_mockRepository.variables).thenReturn(<StoredVariable>[storedVariable]);
+          when(_mockRepository.branches).thenReturn(<StoredBranch>[storedBranch]);
+          return dataStoreBloc;
+        },
+        act: (bloc) => bloc.add(const BranchStoreDeleteEvent(uuid: 'a-uuid-1')),
+        expect: () => [
+              DataStoreUpdating(),
+              DataStoreUpdated([storedScript], [storedVariable], [storedBranch]),
+            ],
+        verify: (bloc) => verify(_mockRepository.deleteBranch('a-uuid-1')).called(1));
   });
 }

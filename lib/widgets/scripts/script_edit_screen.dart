@@ -34,7 +34,7 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
     setState(() {
       if (widget.editUuid != null) {
         _isNew = false;
-        _script = RepositoryProvider.of<DataStoreRepository>(context).get(widget.editUuid!);
+        _script = RepositoryProvider.of<DataStoreRepository>(context).getScript(widget.editUuid!);
       } else {
         _isNew = true;
         _script = StoredScript.empty();
@@ -156,6 +156,7 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
                               envVars: _formKey.currentState?.value['envVars'],
                             ));
                           }
+                          BlocProvider.of<DataStoreBloc>(context).add(DataStoreSave(RepositoryProvider.of<ConfigurationRepository>(context).scriptDataFile.getValue()));
 
                           debugPrint('validation success');
                           debugPrint(_formKey.currentState?.value.toString());

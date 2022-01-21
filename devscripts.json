@@ -55,7 +55,75 @@
           "value2": "bob"
         }
       ]
+    },
+    {
+      "uuid": "9228f3b0-7998-11ec-b8de-8914548746d7",
+      "name": "test script 99",
+      "command": "/home/mathew/Downloads/dell/powerPlug.stl",
+      "args": [
+        "a",
+        "b",
+        "c"
+      ],
+      "workingDirectory": "/home/mathew/src-work/ctct_products_darksidemain",
+      "runInDocker": false,
+      "envVars": []
     }
   ],
-  "variables": []
+  "variables": [
+    {
+      "uuid": "a-uuid-1",
+      "name": "var1",
+      "branchValues": [
+        {
+          "value1": "987dcc50-7992-11ec-bb9a-8b0be43a1846",
+          "value2": "v11"
+        },
+        {
+          "value1": "7279d660-7998-11ec-b8de-8914548746d7",
+          "value2": "v21"
+        }
+      ]
+    },
+    {
+      "uuid": "a-uuid-2",
+      "name": "var2",
+      "branchValues": [
+        {
+          "value1": "7279d660-7998-11ec-b8de-8914548746d7",
+          "value2": "v21"
+        },
+        {
+          "value1": "987dcc50-7992-11ec-bb9a-8b0be43a1846",
+          "value2": "v22"
+        }
+      ]
+    },
+    {
+      "uuid": "a-uuid-3",
+      "name": "var3",
+      "branchValues": [
+        {
+          "value1": "7279d660-7998-11ec-b8de-8914548746d7",
+          "value2": "v31"
+        },
+        {
+          "value1": "987dcc50-7992-11ec-bb9a-8b0be43a1846",
+          "value2": "v23"
+        }
+      ]
+    }
+  ],
+  "branches": [
+    {
+      "uuid": "987dcc50-7992-11ec-bb9a-8b0be43a1846",
+      "name": "b2",
+      "directory": "/home/mathew/src"
+    },
+    {
+      "uuid": "7279d660-7998-11ec-b8de-8914548746d7",
+      "name": "B3",
+      "directory": "/usr/bin"
+    }
+  ]
 }

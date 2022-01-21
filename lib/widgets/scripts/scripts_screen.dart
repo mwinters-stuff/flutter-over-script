@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overscript/bloc/bloc.dart';
 import 'package:overscript/repositories/repositories.dart';
-import 'package:overscript/widgets/widgets.dart';
+import 'package:overscript/widgets/scripts/script_card.dart';
+import 'package:overscript/widgets/scripts/script_edit_screen.dart';
+import 'package:overscript/widgets/scripts/script_list_item.dart';
 
 class ScriptsScreen extends StatefulWidget {
   static const routeName = '/scripts';
@@ -19,7 +21,7 @@ class _ScriptsScreenState extends State<ScriptsScreen> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<DataStoreBloc>(context).add(const DataStoreLoad("devscripts.json"));
+    BlocProvider.of<DataStoreBloc>(context).add(DataStoreLoad(RepositoryProvider.of<ConfigurationRepository>(context).scriptDataFile.getValue()));
   }
 
   String _scriptsNameList(List<StoredScript> scripts) {
@@ -69,6 +71,7 @@ class _ScriptsScreenState extends State<ScriptsScreen> {
                                       Navigator.pop(context, 'OK');
                                       for (var element in _selected) {
                                         BlocProvider.of<DataStoreBloc>(context).add(ScriptStoreDeleteEvent(uuid: element.uuid));
+                                        BlocProvider.of<DataStoreBloc>(context).add(DataStoreSave(RepositoryProvider.of<ConfigurationRepository>(context).scriptDataFile.getValue()));
                                       }
                                     },
                                     child: const Text('OK'),

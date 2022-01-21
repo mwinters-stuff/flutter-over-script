@@ -86,5 +86,17 @@
         }
       ]
     }
+  ],
+  "branches": [
+    {
+      "uuid": "uuid-1",
+      "name": "master",
+      "directory": "/src/master"
+    },
+    {
+      "uuid": "uuid-2",
+      "name": "branch1",
+      "directory": "/src/branch1"
+    }
   ]
 }

@@ -31,8 +31,7 @@ class FormBuilderStringListEditor extends FormBuilderField<List<String>> {
   final InputCounterWidgetBuilder? buildCounter;
   final bool expands;
   final bool showCursor;
-  final Widget Function(BuildContext, Widget?)?
-      editorBuilder; // widget.builder,
+  final Widget Function(BuildContext, Widget?)? editorBuilder; // widget.builder,
 
   final RouteSettings? routeSettings; // widget.routeSettings,
   final String? saveText; // widget.saveText,
@@ -134,24 +133,18 @@ class FormBuilderStringListEditor extends FormBuilderField<List<String>> {
         );
 
   @override
-  _FormBuilderStringListEditorState createState() =>
-      _FormBuilderStringListEditorState();
+  _FormBuilderStringListEditorState createState() => _FormBuilderStringListEditorState();
 }
 
-class _FormBuilderStringListEditorState
-    extends FormBuilderFieldState<FormBuilderStringListEditor, List<String>> {
+class _FormBuilderStringListEditorState extends FormBuilderFieldState<FormBuilderStringListEditor, List<String>> {
   late TextEditingController _effectiveController;
 
-  InputDecoration get _decoration => widget.decoration.copyWith(
-      label: Text(widget.labelText),
-      suffixIcon: IconButton(
-          onPressed: () => handleTap(), icon: const Icon(Icons.list)));
+  InputDecoration get _decoration => widget.decoration.copyWith(label: Text(widget.labelText), suffixIcon: IconButton(onPressed: () => handleTap(), icon: const Icon(Icons.list)));
 
   @override
   void initState() {
     super.initState();
-    _effectiveController =
-        widget.controller ?? TextEditingController(text: _valueToText());
+    _effectiveController = widget.controller ?? TextEditingController(text: _valueToText());
   }
 
   @override
@@ -208,12 +201,10 @@ class _OnAddItemEvent {
   void addItem() => addItemFunc!();
 }
 
-Future _showDialog(
-    BuildContext context, String title, List<String> items) async {
+Future _showDialog(BuildContext context, String title, List<String> items) async {
   final addItemEvent = _OnAddItemEvent();
 
-  final listView =
-      _ArgumentsListView(items: List.from(items), onAddItemEvent: addItemEvent);
+  final listView = _ArgumentsListView(items: List.from(items), onAddItemEvent: addItemEvent);
   return showDialog(
     context: context,
     builder: (context) => CustomAlertDialog(
@@ -235,10 +226,7 @@ Future _showDialog(
         ),
         TextButton(
           onPressed: () {
-            Navigator.pop(
-                context,
-                List.from(
-                    listView.items.where((element) => element.isNotEmpty)));
+            Navigator.pop(context, List.from(listView.items.where((element) => element.isNotEmpty)));
           },
           child: const Text('OK'),
         ),
@@ -250,9 +238,7 @@ Future _showDialog(
 }
 
 class _ArgumentsListView extends StatefulWidget {
-  const _ArgumentsListView(
-      {Key? key, required this.items, required this.onAddItemEvent})
-      : super(key: key);
+  const _ArgumentsListView({Key? key, required this.items, required this.onAddItemEvent}) : super(key: key);
 
   final List<String> items;
   final _OnAddItemEvent onAddItemEvent;
@@ -317,13 +303,7 @@ typedef _OnSubmitted = void Function(String value);
 typedef _OnRemove = void Function(int index);
 
 class _ArgumentListTile extends StatefulWidget {
-  const _ArgumentListTile(
-      {Key? key,
-      required this.index,
-      required this.value,
-      required this.onSubmitted,
-      required this.onRemove})
-      : super(key: key);
+  const _ArgumentListTile({Key? key, required this.index, required this.value, required this.onSubmitted, required this.onRemove}) : super(key: key);
 
   final int index;
   final String value;
@@ -374,11 +354,7 @@ class _ArgumentListTileState extends State<_ArgumentListTile> {
               child: TextField(
                 controller: _controller,
               ))),
-      Padding(
-          padding: const EdgeInsets.all(8),
-          child: IconButton(
-              icon: const Icon(Icons.delete_forever),
-              onPressed: () => widget.onRemove(widget.index)))
+      Padding(padding: const EdgeInsets.all(8), child: IconButton(icon: const Icon(Icons.delete_forever), onPressed: () => widget.onRemove(widget.index)))
     ]);
   }
 }

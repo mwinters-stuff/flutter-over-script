@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:overscript/repositories/stored_script.dart';
+import 'package:overscript/repositories/repositories.dart';
 
 typedef ScriptCardSelectedCallback = void Function(StoredScript script, bool selected);
 

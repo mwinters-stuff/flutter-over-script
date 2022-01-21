@@ -6,7 +6,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:overscript/bloc/bloc.dart';
 import 'package:overscript/repositories/repositories.dart';
+import 'package:overscript/widgets/scripts/scripts.dart';
 import 'package:overscript/widgets/settings_screen.dart';
+import 'package:overscript/widgets/variables/variables.dart';
 import 'package:overscript/widgets/widgets.dart';
 import 'dart:io' show Platform;
 import 'package:path/path.dart' as p;
@@ -14,6 +16,8 @@ import 'package:args/args.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:dog/dog.dart';
 import 'package:window_size/window_size.dart';
+
+import 'widgets/branches/branches.dart';
 
 Future<void> main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -91,6 +95,19 @@ class MyApp extends StatelessWidget {
                 return MaterialPageRoute(builder: (BuildContext context) => const ScriptEditScreen());
               case ScriptEditScreen.routeNameEdit:
                 return MaterialPageRoute(builder: (BuildContext context) => ScriptEditScreen(editUuid: settings.arguments as String));
+              case BranchesScreen.routeName:
+                return MaterialPageRoute(builder: (BuildContext context) => const BranchesScreen());
+              case BranchEditScreen.routeNameAdd:
+                return MaterialPageRoute(builder: (BuildContext context) => const BranchEditScreen());
+              case BranchEditScreen.routeNameEdit:
+                return MaterialPageRoute(builder: (BuildContext context) => BranchEditScreen(editUuid: settings.arguments as String));
+
+              case VariablesScreen.routeName:
+                return MaterialPageRoute(builder: (BuildContext context) => const VariablesScreen());
+              case VariableEditScreen.routeNameAdd:
+                return MaterialPageRoute(builder: (BuildContext context) => const VariableEditScreen());
+              case VariableEditScreen.routeNameEdit:
+                return MaterialPageRoute(builder: (BuildContext context) => VariableEditScreen(editUuid: settings.arguments as String));
               default:
                 return MaterialPageRoute(builder: (BuildContext context) => const AppScaffold(title: 'Overscript'));
             }

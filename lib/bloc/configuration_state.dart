@@ -17,13 +17,10 @@ class ConfigurationLoadedState extends ConfigurationState {
   const ConfigurationLoadedState({required this.configurationRepository});
   Preference<String> get sourcePath => configurationRepository.sourcePath;
   Preference<String> get scriptPath => configurationRepository.scriptPath;
-  Preference<String> get editorExecutable =>
-      configurationRepository.editorExecutable;
-  Preference<String> get selectedBranchName =>
-      configurationRepository.selectedBranchName;
-  Preference<bool> get usePrism => configurationRepository.usePrism;
-  Preference<bool> get useGuide => configurationRepository.useGuide;
+  Preference<String> get editorExecutable => configurationRepository.editorExecutable;
+  Preference<String> get selectedBranchName => configurationRepository.selectedBranchName;
   Preference<bool> get useKitty => configurationRepository.useKitty;
+  Preference<String> get scriptDataFile => configurationRepository.scriptDataFile;
 
   @override
   List<Object> get props => [configurationRepository];

@@ -9,3 +9,4 @@ export 'data_store_repository.dart';
 export 'stored_script.dart';
 export 'stored_string_pair.dart';
 export 'stored_variable.dart';
+export 'stored_branch.dart';

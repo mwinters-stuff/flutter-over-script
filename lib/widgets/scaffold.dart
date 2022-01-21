@@ -5,10 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overscript/bloc/bloc.dart';
 import 'package:overscript/repositories/repositories.dart';
+import 'package:overscript/widgets/branches/branches.dart';
 import 'package:overscript/widgets/settings_screen.dart';
+import 'package:overscript/widgets/variables/variables.dart';
 import 'package:overscript/widgets/widgets.dart';
 import 'package:path/path.dart' as p;
 import 'package:window_manager/window_manager.dart';
+
+import 'scripts/scripts.dart';
 
 class AppScaffold extends StatefulWidget {
   const AppScaffold({Key? key, required this.title}) : super(key: key);
@@ -18,11 +22,8 @@ class AppScaffold extends StatefulWidget {
   _AppScaffoldState createState() => _AppScaffoldState();
 }
 
-class _AppScaffoldState extends State<AppScaffold>
-    with WindowListener, TickerProviderStateMixin {
+class _AppScaffoldState extends State<AppScaffold> with WindowListener, TickerProviderStateMixin {
   late TabController _tabController;
-  bool _usePrism = false;
-  bool _useGuide = false;
   bool useKitty = false;
 
   Timer? _timer;
@@ -32,10 +33,7 @@ class _AppScaffoldState extends State<AppScaffold>
     super.initState();
     windowManager.addListener(this);
     setState(() {
-      final repositoryProvider =
-          RepositoryProvider.of<ConfigurationRepository>(context);
-      _usePrism = repositoryProvider.usePrism.getValue();
-      _useGuide = repositoryProvider.useGuide.getValue();
+      final repositoryProvider = RepositoryProvider.of<ConfigurationRepository>(context);
       useKitty = repositoryProvider.useKitty.getValue();
     });
   }
@@ -58,30 +56,19 @@ class _AppScaffoldState extends State<AppScaffold>
 
   void _saveWindowBounds() {
     _timer?.cancel();
-    _timer = Timer(
-        const Duration(seconds: 1),
-        () => windowManager.getBounds().then((value) =>
-            RepositoryProvider.of<ConfigurationRepository>(context)
-                .windowRect
-                .setValue(value)));
+    _timer = Timer(const Duration(seconds: 1), () => windowManager.getBounds().then((value) => RepositoryProvider.of<ConfigurationRepository>(context).windowRect.setValue(value)));
   }
 
   @override
   Widget build(BuildContext context) {
-    final configurationRepository =
-        RepositoryProvider.of<ConfigurationRepository>(context);
+    final configurationRepository = RepositoryProvider.of<ConfigurationRepository>(context);
     return BlocConsumer<PtyBloc, PtyState>(listener: (context, state) {
       if (state is PtyAddingTerminalState) {
-        RepositoryProvider.of<PtyRepository>(context).addPty(
-            context: context,
-            tabTitle: state.tabTitle,
-            commands: state.commands,
-            workingDirectory: state.workingDirectory);
+        RepositoryProvider.of<PtyRepository>(context).addPty(context: context, tabTitle: state.tabTitle, commands: state.commands, workingDirectory: state.workingDirectory);
       }
     }, builder: (context, state) {
       // if (state is PtyTerminalsState) {
-      _tabController =
-          TabController(length: state.terminals.length, vsync: this);
+      _tabController = TabController(length: state.terminals.length, vsync: this);
       if (state.terminals.isNotEmpty) {
         _tabController.animateTo(state.terminals.length - 1);
       }
@@ -93,42 +80,22 @@ class _AppScaffoldState extends State<AppScaffold>
                   icon: const Icon(Icons.close_rounded),
                   tooltip: 'Close All Tabs',
                   onPressed: () {
-                    RepositoryProvider.of<PtyRepository>(context)
-                        .closeAll(context);
-                    RepositoryProvider.of<KittyRepository>(context)
-                        .closeAll(context);
+                    RepositoryProvider.of<PtyRepository>(context).closeAll(context);
+                    RepositoryProvider.of<KittyRepository>(context).closeAll(context);
                   }),
-              IconButton(
-                  tooltip: 'Reload Scripts',
-                  onPressed: () => BlocProvider.of<OldScriptsBloc>(context)
-                      .add(OldScriptsReloadedEvent(context: context)),
-                  icon: const Icon(Icons.refresh)),
+              IconButton(tooltip: 'Reload Scripts', onPressed: () => BlocProvider.of<OldScriptsBloc>(context).add(OldScriptsReloadedEvent(context: context)), icon: const Icon(Icons.refresh)),
               IconButton(
                   tooltip: 'Edit Scripts',
                   onPressed: () => {
-                        Process.runSync(
-                            configurationRepository.editorExecutable.getValue(),
-                            [
-                              p.join(
-                                  configurationRepository.scriptPath.getValue(),
-                                  'scripts.yaml')
-                            ])
+                        Process.runSync(configurationRepository.editorExecutable.getValue(), [p.join(configurationRepository.scriptPath.getValue(), 'scripts.yaml')])
                       },
                   icon: const Icon(Icons.edit)),
-              IconButton(
-                  tooltip: 'Scripts',
-                  onPressed: () =>
-                      Navigator.of(context).pushNamed(ScriptsScreen.routeName),
-                  icon: const Icon(Icons.subscript_sharp)),
-              IconButton(
-                  tooltip: 'Settings',
-                  onPressed: () =>
-                      Navigator.of(context).pushNamed(SettingsScreen.routeName),
-                  icon: const Icon(Icons.settings))
+              IconButton(tooltip: 'Scripts', onPressed: () => Navigator.of(context).pushNamed(ScriptsScreen.routeName), icon: const Icon(Icons.subscript_sharp)),
+              IconButton(tooltip: 'Branches', onPressed: () => Navigator.of(context).pushNamed(BranchesScreen.routeName), icon: const Icon(Icons.texture_rounded)),
+              IconButton(tooltip: 'Variables', onPressed: () => Navigator.of(context).pushNamed(VariablesScreen.routeName), icon: const Icon(Icons.vertical_distribute)),
+              IconButton(tooltip: 'Settings', onPressed: () => Navigator.of(context).pushNamed(SettingsScreen.routeName), icon: const Icon(Icons.settings))
             ],
-            bottom: TabBar(
-                controller: _tabController,
-                tabs: state.getTabs(context: context)),
+            bottom: TabBar(controller: _tabController, tabs: state.getTabs(context: context)),
           ),
           body: Row(
             children: [
@@ -146,13 +113,7 @@ class _AppScaffoldState extends State<AppScaffold>
                                 'Branch',
                                 style: Theme.of(context).textTheme.headline5,
                               ),
-                              BranchPopupMenu(
-                                  initialValue: configurationRepository
-                                      .selectedBranchName
-                                      .getValue(),
-                                  onChanged: (value) => configurationRepository
-                                      .selectedBranchName
-                                      .setValue(value)),
+                              BranchPopupMenu(initialValue: configurationRepository.selectedBranchName.getValue(), onChanged: (value) => configurationRepository.selectedBranchName.setValue(value)),
                               Text(
                                 'Options',
                                 style: Theme.of(context).textTheme.headline5,
@@ -162,31 +123,10 @@ class _AppScaffoldState extends State<AppScaffold>
                                   onChanged: (value) {
                                     setState(() {
                                       useKitty = value!;
-                                      configurationRepository.useKitty
-                                          .setValue(value);
+                                      configurationRepository.useKitty.setValue(value);
                                     });
                                   },
                                   title: const Text('External Terminal')),
-                              CheckboxListTile(
-                                  value: _usePrism,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _usePrism = value!;
-                                      configurationRepository.usePrism
-                                          .setValue(value);
-                                    });
-                                  },
-                                  title: const Text('Use Prism')),
-                              CheckboxListTile(
-                                  value: _useGuide,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _useGuide = value!;
-                                      configurationRepository.useGuide
-                                          .setValue(value);
-                                    });
-                                  },
-                                  title: const Text('Use Guide')),
                               Text(
                                 'Script',
                                 style: Theme.of(context).textTheme.headline5,
