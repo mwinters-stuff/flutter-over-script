@@ -9,8 +9,9 @@ typedef VariableListItemSelectedCallback = void Function(StoredVariable variable
 class VariableListItem extends StatefulWidget {
   final StoredVariable storedVariable;
   final VariableListItemSelectedCallback? selectedCallback;
+  final List<StoredBranch> storedBranches;
 
-  const VariableListItem({Key? key, required this.storedVariable, this.selectedCallback}) : super(key: key);
+  const VariableListItem({Key? key, required this.storedVariable, required this.storedBranches, this.selectedCallback}) : super(key: key);
 
   @override
   _VariableListItemState createState() => _VariableListItemState();
@@ -23,13 +24,16 @@ class _VariableListItemState extends State<VariableListItem> {
   @override
   void initState() {
     super.initState();
-    _variable = widget.storedVariable;
+    setState(() {
+      _variable = widget.storedVariable;
+    });
   }
 
   String _branchValuesList(List<StringPair> strings) {
     String rv = '';
     for (var pair in strings) {
-      rv = rv + pair.value1 + " = " + pair.value2 + " ";
+      var branchName = widget.storedBranches.firstWhere((element) => pair.value1 == element.uuid).name;
+      rv = rv + branchName + " = " + pair.value2 + "\n";
     }
     return rv;
   }

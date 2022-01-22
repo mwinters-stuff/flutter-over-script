@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:overscript/bloc/bloc.dart';
+import 'package:overscript/bootstrap.dart';
 import 'package:overscript/repositories/repositories.dart';
 import 'package:overscript/widgets/scripts/scripts.dart';
 import 'package:overscript/widgets/settings_screen.dart';
@@ -19,7 +20,9 @@ import 'package:window_size/window_size.dart';
 
 import 'widgets/branches/branches.dart';
 
-Future<void> main(List<String> arguments) async {
+void startup(List<String> arguments) {}
+
+void main(List<String> arguments) {
   WidgetsFlutterBinding.ensureInitialized();
 
   var parser = ArgParser();
@@ -37,18 +40,18 @@ Future<void> main(List<String> arguments) async {
 
   final scriptPath = args['script-path'];
   final sourcePath = args['source-path'];
-  final preferences = await StreamingSharedPreferences.instance;
+  StreamingSharedPreferences.instance.then((preferences) {
+    var configurationRepository = ConfigurationRepository(preferences: preferences, scriptPath: scriptPath, sourcePath: sourcePath);
 
-  var configurationRepository = ConfigurationRepository(preferences: preferences, scriptPath: scriptPath, sourcePath: sourcePath);
-
-  runApp(MultiRepositoryProvider(providers: [
-    RepositoryProvider<ConfigurationRepository>(create: (context) => configurationRepository),
-    RepositoryProvider<OldScriptsRepository>(create: (context) => OldScriptsRepository(context)),
-    RepositoryProvider<BranchRepository>(create: (context) => BranchRepository()),
-    RepositoryProvider<PtyRepository>(create: (context) => PtyRepository()),
-    RepositoryProvider<KittyRepository>(create: (context) => KittyRepository()),
-    RepositoryProvider<DataStoreRepository>(create: (context) => DataStoreRepository()),
-  ], child: const MyApp()));
+    bootstrap(() => MultiRepositoryProvider(providers: [
+          RepositoryProvider<ConfigurationRepository>(create: (context) => configurationRepository),
+          RepositoryProvider<OldScriptsRepository>(create: (context) => OldScriptsRepository(context)),
+          RepositoryProvider<BranchRepository>(create: (context) => BranchRepository()),
+          RepositoryProvider<PtyRepository>(create: (context) => PtyRepository()),
+          RepositoryProvider<KittyRepository>(create: (context) => KittyRepository()),
+          RepositoryProvider<DataStoreRepository>(create: (context) => DataStoreRepository()),
+        ], child: const MyApp()));
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -92,22 +95,22 @@ class MyApp extends StatelessWidget {
               case ScriptsScreen.routeName:
                 return MaterialPageRoute(builder: (BuildContext context) => const ScriptsScreen());
               case ScriptEditScreen.routeNameAdd:
-                return MaterialPageRoute(builder: (BuildContext context) => const ScriptEditScreen());
+                return MaterialPageRoute(builder: (BuildContext context) => const ScriptEditScreen(), fullscreenDialog: true);
               case ScriptEditScreen.routeNameEdit:
-                return MaterialPageRoute(builder: (BuildContext context) => ScriptEditScreen(editUuid: settings.arguments as String));
+                return MaterialPageRoute(builder: (BuildContext context) => ScriptEditScreen(editUuid: settings.arguments as String), fullscreenDialog: true);
               case BranchesScreen.routeName:
                 return MaterialPageRoute(builder: (BuildContext context) => const BranchesScreen());
               case BranchEditScreen.routeNameAdd:
-                return MaterialPageRoute(builder: (BuildContext context) => const BranchEditScreen());
+                return MaterialPageRoute(builder: (BuildContext context) => const BranchEditScreen(), fullscreenDialog: true);
               case BranchEditScreen.routeNameEdit:
-                return MaterialPageRoute(builder: (BuildContext context) => BranchEditScreen(editUuid: settings.arguments as String));
+                return MaterialPageRoute(builder: (BuildContext context) => BranchEditScreen(editUuid: settings.arguments as String), fullscreenDialog: true);
 
               case VariablesScreen.routeName:
                 return MaterialPageRoute(builder: (BuildContext context) => const VariablesScreen());
               case VariableEditScreen.routeNameAdd:
-                return MaterialPageRoute(builder: (BuildContext context) => const VariableEditScreen());
+                return MaterialPageRoute(builder: (BuildContext context) => const VariableEditScreen(), fullscreenDialog: true);
               case VariableEditScreen.routeNameEdit:
-                return MaterialPageRoute(builder: (BuildContext context) => VariableEditScreen(editUuid: settings.arguments as String));
+                return MaterialPageRoute(builder: (BuildContext context) => VariableEditScreen(editUuid: settings.arguments as String), fullscreenDialog: true);
               default:
                 return MaterialPageRoute(builder: (BuildContext context) => const AppScaffold(title: 'Overscript'));
             }

@@ -83,6 +83,7 @@ class _VariablesScreenState extends State<VariablesScreen> {
         listener: (context, state) {},
         builder: (context, state) {
           if (state is DataStoreUpdated) {
+            print("XXXXXX");
             return _listView(state.variables);
           }
           return const Center(child: CircularProgressIndicator());
@@ -94,6 +95,7 @@ class _VariablesScreenState extends State<VariablesScreen> {
         itemCount: variables.length,
         itemBuilder: (context, index) => VariableListItem(
             storedVariable: variables[index],
+            storedBranches: RepositoryProvider.of<DataStoreRepository>(context).branches,
             selectedCallback: (script, selected) {
               setState(() {
                 _selected.removeWhere((element) => element.uuid == script.uuid);

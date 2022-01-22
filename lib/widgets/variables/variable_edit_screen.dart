@@ -44,7 +44,42 @@ class _VariableEditScreenState extends State<VariableEditScreen> {
       }
     });
     return Scaffold(
-      appBar: AppBar(title: _isNew ? const Text('New Variable') : const Text('Edit Variable')),
+      appBar: AppBar(title: _isNew ? const Text('New Variable') : const Text('Edit Variable'), actions: [
+        MaterialButton(
+            child: const Text("SAVE"),
+            onPressed: () {
+              if (_formKey.currentState?.saveAndValidate() ?? false) {
+                var branchValues = <StringPair>[];
+
+                for (StoredBranch sb in _branches ?? []) {
+                  branchValues.add(StringPair(sb.uuid, _formKey.currentState?.value[sb.uuid]));
+                }
+
+                if (_isNew) {
+                  BlocProvider.of<DataStoreBloc>(context).add(VariableStoreAddEvent(
+                    name: _formKey.currentState?.value['name'],
+                    branchValues: branchValues,
+                  ));
+                } else {
+                  BlocProvider.of<DataStoreBloc>(context).add(VariableStoreEditEvent(
+                    uuid: _variable!.uuid,
+                    name: _formKey.currentState?.value['name'],
+                    branchValues: branchValues,
+                  ));
+                }
+                BlocProvider.of<DataStoreBloc>(context).add(DataStoreSave(RepositoryProvider.of<ConfigurationRepository>(context).scriptDataFile.getValue()));
+
+                Navigator.of(context).pop();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Validation Failed'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            })
+      ]),
       body: buildBody(context),
     );
   }
@@ -53,8 +88,13 @@ class _VariableEditScreenState extends State<VariableEditScreen> {
   bool readOnly = false;
 
   Widget buildBody(BuildContext context) {
+    var initialValues = {'name': _variable!.name};
+    for (StoredBranch sb in _branches ?? []) {
+      initialValues.putIfAbsent(sb.uuid, () => _variable!.branchValues.firstWhere((element) => sb.uuid == element.value1, orElse: () => const StringPair("", "")).value2);
+    }
+
     return Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(16),
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -62,14 +102,10 @@ class _VariableEditScreenState extends State<VariableEditScreen> {
               key: _formKey,
               // enabled: false,
               autovalidateMode: AutovalidateMode.disabled,
-              initialValue: {
-                'name': _variable!.name,
-                'branchValues': _variable!.branchValues,
-              },
+              initialValue: initialValues,
               skipDisabled: true,
               child: Column(
                 children: <Widget>[
-                  const SizedBox(height: 15),
                   FormBuilderTextField(
                     autovalidateMode: AutovalidateMode.always,
                     name: 'name',
@@ -82,82 +118,13 @@ class _VariableEditScreenState extends State<VariableEditScreen> {
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
                   ),
-
-                  // FormBuilderTextField(
-                  //   autovalidateMode: AutovalidateMode.always,
-                  //   name: 'directory',
-
-                  //   decoration: InputDecoration(
-                  //       labelText: 'Directory',
-                  //       suffixIcon: IconButton(
-                  //           onPressed: () {
-                  //             _pickDir(context, "Select Branch Directory").then((value) => {_formKey.currentState!.fields['directory']!.didChange(value)});
-                  //           },
-                  //           icon: const Icon(Icons.folder_open))),
-
-                  //   // valueTransformer: (text) => num.tryParse(text),
-                  //   validator: FormBuilderValidators.compose([FormBuilderValidators.required(context), validatorDirExists(context, errorText: "Branch directory must exist")]),
-                  //   keyboardType: TextInputType.text,
-                  //   textInputAction: TextInputAction.next,
-                  // ),
-                  FormBuilderBranchVariableList(
-                    name: 'branchValues', labelText: "Branch Values",
-                    branchList: _branches ?? [],
-                    //   decoration: InputDecoration(
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: MaterialButton(
-                      color: Theme.of(context).colorScheme.secondary,
-                      onPressed: () {
-                        if (_formKey.currentState?.saveAndValidate() ?? false) {
-                          if (_isNew) {
-                            BlocProvider.of<DataStoreBloc>(context).add(VariableStoreAddEvent(
-                              name: _formKey.currentState?.value['name'],
-                              branchValues: _formKey.currentState?.value['branchValues'],
-                            ));
-                          } else {
-                            BlocProvider.of<DataStoreBloc>(context).add(VariableStoreEditEvent(
-                              uuid: _variable!.uuid,
-                              name: _formKey.currentState?.value['name'],
-                              branchValues: _formKey.currentState?.value['branchValues'],
-                            ));
-                          }
-                          BlocProvider.of<DataStoreBloc>(context).add(DataStoreSave(RepositoryProvider.of<ConfigurationRepository>(context).scriptDataFile.getValue()));
-
-                          debugPrint('validation success');
-                          debugPrint(_formKey.currentState?.value.toString());
-                          Navigator.of(context).pop();
-                        } else {
-                          debugPrint(_formKey.currentState?.value.toString());
-                          debugPrint('validation failed');
-                        }
-                      },
-                      child: const Text(
-                        'Submit',
-                        style: TextStyle(color: Colors.white),
+                  for (StoredBranch branch in _branches ?? [])
+                    FormBuilderTextField(
+                      name: branch.uuid,
+                      decoration: InputDecoration(
+                        labelText: "Branch: ${branch.name}",
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        _formKey.currentState?.reset();
-                      },
-                      // color: Theme.of(context).colorScheme.secondary,
-                      child: Text(
-                        'Reset',
-                        style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                      ),
-                    ),
-                  ),
+                    )
                 ],
               ),
             ),

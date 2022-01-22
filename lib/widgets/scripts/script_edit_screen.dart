@@ -41,7 +41,48 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
       }
     });
     return Scaffold(
-      appBar: AppBar(title: _isNew ? const Text('New Script') : const Text('Edit Script')),
+      appBar: AppBar(
+        title: _isNew ? const Text('New Script') : const Text('Edit Script'),
+        actions: [
+          MaterialButton(
+            child: const Text("SAVE"),
+            onPressed: () {
+              if (_formKey.currentState?.saveAndValidate() ?? false) {
+                if (_isNew) {
+                  BlocProvider.of<DataStoreBloc>(context).add(ScriptStoreAddEvent(
+                    name: _formKey.currentState?.value['name'],
+                    command: _formKey.currentState?.value['command'],
+                    workingDirectory: _formKey.currentState?.value['workingDirectory'],
+                    args: _formKey.currentState?.value['args'],
+                    runInDocker: _formKey.currentState?.value['runInDocker'],
+                    envVars: _formKey.currentState?.value['envVars'],
+                  ));
+                } else {
+                  BlocProvider.of<DataStoreBloc>(context).add(ScriptStoreEditEvent(
+                    uuid: _script!.uuid,
+                    name: _formKey.currentState?.value['name'],
+                    command: _formKey.currentState?.value['command'],
+                    workingDirectory: _formKey.currentState?.value['workingDirectory'],
+                    args: _formKey.currentState?.value['args'],
+                    runInDocker: _formKey.currentState?.value['runInDocker'],
+                    envVars: _formKey.currentState?.value['envVars'],
+                  ));
+                }
+                BlocProvider.of<DataStoreBloc>(context).add(DataStoreSave(RepositoryProvider.of<ConfigurationRepository>(context).scriptDataFile.getValue()));
+
+                Navigator.of(context).pop();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Validation Failed'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+          )
+        ],
+      ),
       body: buildBody(context),
     );
   }
@@ -51,7 +92,7 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
 
   Widget buildBody(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(16),
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -71,7 +112,6 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
               skipDisabled: true,
               child: Column(
                 children: <Widget>[
-                  const SizedBox(height: 15),
                   FormBuilderTextField(
                     autovalidateMode: AutovalidateMode.always,
                     name: 'name',
@@ -127,70 +167,70 @@ class _ScriptEditScreenState extends State<ScriptEditScreen> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: MaterialButton(
-                      color: Theme.of(context).colorScheme.secondary,
-                      onPressed: () {
-                        if (_formKey.currentState?.saveAndValidate() ?? false) {
-                          if (_isNew) {
-                            BlocProvider.of<DataStoreBloc>(context).add(ScriptStoreAddEvent(
-                              name: _formKey.currentState?.value['name'],
-                              command: _formKey.currentState?.value['command'],
-                              workingDirectory: _formKey.currentState?.value['workingDirectory'],
-                              args: _formKey.currentState?.value['args'],
-                              runInDocker: _formKey.currentState?.value['runInDocker'],
-                              envVars: _formKey.currentState?.value['envVars'],
-                            ));
-                          } else {
-                            BlocProvider.of<DataStoreBloc>(context).add(ScriptStoreEditEvent(
-                              uuid: _script!.uuid,
-                              name: _formKey.currentState?.value['name'],
-                              command: _formKey.currentState?.value['command'],
-                              workingDirectory: _formKey.currentState?.value['workingDirectory'],
-                              args: _formKey.currentState?.value['args'],
-                              runInDocker: _formKey.currentState?.value['runInDocker'],
-                              envVars: _formKey.currentState?.value['envVars'],
-                            ));
-                          }
-                          BlocProvider.of<DataStoreBloc>(context).add(DataStoreSave(RepositoryProvider.of<ConfigurationRepository>(context).scriptDataFile.getValue()));
+            // Padding(
+            //   padding: const EdgeInsets.only(top: 16),
+            //   child: Row(
+            //     children: <Widget>[
+            //       Expanded(
+            //         child: MaterialButton(
+            //           color: Theme.of(context).colorScheme.secondary,
+            //           onPressed: () {
+            //             if (_formKey.currentState?.saveAndValidate() ?? false) {
+            //               if (_isNew) {
+            //                 BlocProvider.of<DataStoreBloc>(context).add(ScriptStoreAddEvent(
+            //                   name: _formKey.currentState?.value['name'],
+            //                   command: _formKey.currentState?.value['command'],
+            //                   workingDirectory: _formKey.currentState?.value['workingDirectory'],
+            //                   args: _formKey.currentState?.value['args'],
+            //                   runInDocker: _formKey.currentState?.value['runInDocker'],
+            //                   envVars: _formKey.currentState?.value['envVars'],
+            //                 ));
+            //               } else {
+            //                 BlocProvider.of<DataStoreBloc>(context).add(ScriptStoreEditEvent(
+            //                   uuid: _script!.uuid,
+            //                   name: _formKey.currentState?.value['name'],
+            //                   command: _formKey.currentState?.value['command'],
+            //                   workingDirectory: _formKey.currentState?.value['workingDirectory'],
+            //                   args: _formKey.currentState?.value['args'],
+            //                   runInDocker: _formKey.currentState?.value['runInDocker'],
+            //                   envVars: _formKey.currentState?.value['envVars'],
+            //                 ));
+            //               }
+            //               BlocProvider.of<DataStoreBloc>(context).add(DataStoreSave(RepositoryProvider.of<ConfigurationRepository>(context).scriptDataFile.getValue()));
 
-                          debugPrint('validation success');
-                          debugPrint(_formKey.currentState?.value.toString());
-                          Navigator.of(context).pop();
-                        } else {
-                          debugPrint(_formKey.currentState?.value.toString());
-                          debugPrint('validation failed');
-                        }
-                      },
-                      child: const Text(
-                        'Submit',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        _formKey.currentState?.reset();
-                      },
-                      // color: Theme.of(context).colorScheme.secondary,
-                      child: Text(
-                        'Reset',
-                        style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            //               debugPrint('validation success');
+            //               debugPrint(_formKey.currentState?.value.toString());
+            //               Navigator.of(context).pop();
+            //             } else {
+            //               debugPrint(_formKey.currentState?.value.toString());
+            //               debugPrint('validation failed');
+            //             }
+            //           },
+            //           child: const Text(
+            //             'Submit',
+            //             style: TextStyle(color: Colors.white),
+            //           ),
+            //         ),
+            //       ),
+            // const SizedBox(width: 20),
+            // Expanded(
+            //   child: OutlinedButton(
+            //     onPressed: () {
+            //       _formKey.currentState?.reset();
+            //     },
+            //     // color: Theme.of(context).colorScheme.secondary,
+            //     child: Text(
+            //       'Reset',
+            //       style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
+      //   ],
+      // ),
+      // ),
     );
   }
 
